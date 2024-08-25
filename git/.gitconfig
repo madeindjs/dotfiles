@@ -1,0 +1,17 @@
+[user]
+  name = Alexandre Rousseau
+	email = alexandre@rsseau.fr
+  signingkey = 92033EFE2EF9EB25FEC61E66D47B3C78AB2676CC
+  last = log -1 HEAD
+[alias]
+  oneline = log --pretty=oneline --abbrev-commit --graph --decorate
+  st = status
+  ck = checkout
+  cm = commit
+  pushf = ! git push origin $(git rev-parse --abbrev-ref HEAD) --force-with-lease
+[commit]
+  gpgsign = true
+[log]
+  showSignature = true
+[core]
+  editor = vim
