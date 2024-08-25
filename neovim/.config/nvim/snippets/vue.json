@@ -1,0 +1,14 @@
+{
+  "watch debug": {
+    "scope": "vue,javascript,typescript",
+    "body": "watch(${1:value}, () => console.log('## ${TM_FILENAME_BASE} - ${1:value}', toRaw(${1:value}.value)), { immediate: true });",
+    "prefix": "watch",
+    "description": "Poor's man debugger in Vue"
+  },
+  "computed": {
+    "scope": "vue,javascript,typescript",
+    "body": "computed(() => { $TM_SELECTED_TEXT });",
+    "description": "Wrap selection in a `computed` function",
+    "prefix": "computed"
+  }
+}

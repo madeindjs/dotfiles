@@ -1,0 +1,21 @@
+{
+  "todotxt:task": {
+    "scope": "plaintext",
+    "prefix": "task",
+    "body": "${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE} ${1} due:${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}"
+  },
+  "todotxt:due today": {
+    "scope": "plaintext",
+    "prefix": "due",
+    "body": "due:${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}",
+    "description": "due:2024-04-02"
+  },
+  "tasks:jira": {
+    "scope": "plaintext",
+    "prefix": "cs:jira",
+    "body": [
+      "${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE} +DXA-${1:1234} ${2:Handle task} https://contentsquare.atlassian.net/browse/DXA-${1:1234} due:${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}"
+    ],
+    "description": "Add tasks for CS release"
+  }
+}

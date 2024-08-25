@@ -1,0 +1,19 @@
+{
+  "build array from size": {
+    "scope": "javascript,typescript,vue",
+    "body": "new Array(${1:10}).fill(undefined).map((_, i) => i);",
+    "prefix": "new Array(",
+    "description": "new Array(10).fill(undefined).map((_, i) => i);"
+  },
+  "array sum": {
+    "scope": "javascript,typescript,vue",
+    "body": ".reduce((acc, ${1:value}) => acc + ${1:value}.${2:foo}, 0);",
+    "prefix": ".reduce"
+  },
+  "console.log var": {
+    "scope": "javascript,typescript,vue",
+    "body": "console.log('## ${TM_FILENAME_BASE}', ${1:value})",
+    "prefix": "console"
+  }
+}
+

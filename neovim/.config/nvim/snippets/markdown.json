@@ -1,0 +1,13 @@
+{
+  "jira link inline": {
+    "scope": "markdown",
+    "prefix": ["APP-"],
+    "body": "[APP-${jiraId}](https://contentsquare.atlassian.net/browse/APP-${jiraId})",
+    "description": "[APP-1234](https://contentsquare.atlassian.net/browse/APP-1234)"
+  },
+  "jira link mutline": {
+    "scope": "markdown",
+    "body": "[$TM_SELECTED_TEXT][$jiraId]\n[$jiraId]: https://contentsquare.atlassian.net/browse/$jiraId\n"
+  }
+}
+
