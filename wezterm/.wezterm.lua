@@ -1,16 +1,34 @@
 local wezterm = require("wezterm")
 
--- This will hold the configuration.
 local config = wezterm.config_builder()
 
--- This is where you actually apply your config choices
+-- theme
+config.font_size = 11.0
+-- config.window_background_opacity = 0.9
+config.hide_tab_bar_if_only_one_tab = true
+config.use_fancy_tab_bar = false
 
--- For example, changing the color scheme:
--- config.color_scheme = "AdventureTime"
-config.font = wezterm.font("JetBrains Mono")
+-- misc
+config.check_for_updates = false
 
--- allow MacOS keyboard special chars (see https://github.com/wez/wezterm/issues/3866)
-config.send_composed_key_when_left_alt_is_pressed = true
+-- mac os
+config.send_composed_key_when_left_alt_is_pressed = true -- allow MacOS keyboard special chars (see https://github.com/wez/wezterm/issues/3867)
 
--- and finally, return the configuration to wezterm
+-- keys
+
+config.leader = { key = "b", mods = "CTRL", timeout_milliseconds = 1000 }
+config.keys = {
+	{
+		key = "e",
+		mods = "LEADER",
+		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
+	},
+	-- Send "CTRL-A" to the terminal when pressing CTRL-A, CTRL-A
+	{
+		key = "o",
+		mods = "LEADER",
+		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
+	},
+}
+
 return config
