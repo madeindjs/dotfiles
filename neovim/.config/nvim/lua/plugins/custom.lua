@@ -24,4 +24,17 @@ return {
       },
     },
   },
+  -- customize telescope
+  {
+    "nvim-telescope/telescope.nvim",
+    opts = {
+      defaults = {
+        preview = {
+          -- avoid preview for big files https://github.com/nvim-telescope/telescope.nvim/issues/623
+          filesize_limit = 0.9999,
+          timeout = 250,
+        },
+      },
+    },
+  },
 }
