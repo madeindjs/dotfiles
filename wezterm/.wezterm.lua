@@ -11,6 +11,7 @@ config.use_fancy_tab_bar = false
 
 -- misc
 config.check_for_updates = false
+config.exit_behavior = "CloseOnCleanExit"
 
 -- mac os
 config.send_composed_key_when_left_alt_is_pressed = true -- allow MacOS keyboard special chars (see https://github.com/wez/wezterm/issues/3867)
