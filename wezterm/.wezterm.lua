@@ -51,25 +51,33 @@ wezterm.on("augment-command-palette", function(window, pane)
 			}),
 		},
 		{
+			brief = "[WT] Start writer-framework",
+			icon = "cod_empty_window", -- https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
+			action = wezterm.action_callback(function(window, pane)
+				local cwd = os.getenv("HOME") .. "/github/writer/writer-framework"
+				local code_tab, code_tab_pane_1, code_win = window:mux_window():spawn_tab({ cwd = cwd })
+				code_tab:set_title("nvim writer-framework")
+				code_tab_pane_1:send_text("nvim .\n")
+
+				local proc_tab, proc_tab_pane_1, proc_win = window:mux_window():spawn_tab({ cwd = cwd })
+				proc_tab:set_title("writer procs")
+				local proc_tab_pane_2 = proc_tab_pane_1:split({ direction = "Bottom", size = 0.75, cwd = cwd })
+				local proc_tab_pane_3 = proc_tab_pane_2:split({ direction = "Right", size = 0.5, cwd = cwd })
+				proc_tab_pane_1:send_text("writer-time.sh '?'")
+				proc_tab_pane_2:send_text("poetry install && poetry shell\n")
+				proc_tab_pane_3:send_text("npm run dev\n")
+			end),
+		},
+		{
 			brief = "[CS] Start app-frontends / JA",
 			icon = "cod_empty_window", -- https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
 			action = wezterm.action_callback(function(window, pane)
 				local cwd = os.getenv("HOME") .. "/github/app-frontends/apps/journey-analysis"
-				local new_tab, first_pane, new_win = window:mux_window():spawn_tab({
-					cwd = cwd,
-				})
+				local new_tab, pane_1, new_win = window:mux_window():spawn_tab({ cwd = cwd })
 				new_tab:set_title("JA")
-				local second_pane = first_pane:split({
-					direction = "Bottom",
-					size = 0.25,
-					cwd = cwd,
-				})
-				-- local mux = wezterm.mux
-				-- local tab, pane, window = mux.spawn_window({
-				-- 	cwd = "/tmp",
-				-- })
-				first_pane:send_text("nvim .\n")
-				second_pane:send_text("pnpm dev\n")
+				local pane_2 = pane_1:split({ direction = "Bottom", size = 0.25, cwd = cwd })
+				pane_1:send_text("nvim .\n")
+				pane_2:send_text("pnpm dev\n")
 			end),
 		},
 	}
