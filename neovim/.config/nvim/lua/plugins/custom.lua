@@ -24,7 +24,7 @@ return {
       },
     },
   },
-  -- customize telescope
+  -- customize exisiting LazyVim plugings
   {
     "nvim-telescope/telescope.nvim",
     opts = {
@@ -33,6 +33,24 @@ return {
           -- avoid preview for big files https://github.com/nvim-telescope/telescope.nvim/issues/623
           filesize_limit = 0.9999,
           timeout = 250,
+        },
+      },
+    },
+  },
+  {
+    "nvim-treesitter",
+    keys = {
+      { "v", desc = "Increment Selection" },
+      { "V", desc = "Decrement Selection", mode = "x" },
+    },
+    opts = {
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = "<C-space>",
+          node_incremental = "v",
+          scope_incremental = false,
+          node_decremental = "V",
         },
       },
     },
