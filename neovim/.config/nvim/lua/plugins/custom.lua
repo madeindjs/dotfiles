@@ -2,6 +2,12 @@ local HOME = vim.fn.stdpath("config")
 
 return {
   {
+    "neovim/nvim-lspconfig",
+    opts = {
+      inlay_hints = { enabled = false },
+    },
+  },
+  {
     "almo7aya/openingh.nvim",
   },
   {
