@@ -49,6 +49,8 @@ function submitListen() {
 
   var listenedAt = Math.floor(new Date().getTime() / 1000);
 
+  var artistMbids = metadata["MUSICBRAINZ_ARTISTID"] ? metadata["MUSICBRAINZ_ARTISTID"].split(';') : [];
+
   var payload = {
     listen_type: "single",
     payload: [
@@ -60,7 +62,7 @@ function submitListen() {
             submission_client: "mpv ListenBrainz Plugin",
             submission_client_version: version,
             release_mbid: metadata["MUSICBRAINZ_RELEASETRACKID"],
-            artist_mbids: [metadata["MUSICBRAINZ_ARTISTID"]],
+            artist_mbids: artistMbids,
           },
           artist_name: artist,
           track_name: title,
