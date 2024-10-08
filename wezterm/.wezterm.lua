@@ -69,15 +69,21 @@ wezterm.on("augment-command-palette", function(window, pane)
 			end),
 		},
 		{
-			brief = "[CS] Start app-frontends / JA",
+			brief = "[CS] Start",
 			icon = "cod_empty_window", -- https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
 			action = wezterm.action_callback(function(window, pane)
-				local cwd = os.getenv("HOME") .. "/github/app-frontends/apps/journey-analysis"
-				local new_tab, pane_1, new_win = window:mux_window():spawn_tab({ cwd = cwd })
-				new_tab:set_title("JA")
-				local pane_2 = pane_1:split({ direction = "Bottom", size = 0.25, cwd = cwd })
-				pane_1:send_text("nvim .\n")
-				pane_2:send_text("pnpm dev\n")
+				local home = os.getenv("HOME")
+
+				local fe_tab = window:mux_window():spawn_tab({ cwd = home .. "/github/app-frontends" })
+				fe_tab:set_title("app-frontends")
+
+				local be_tab = window:mux_window():spawn_tab({ cwd = home .. "/github/app-services" })
+				be_tab:set_title("app-services")
+
+				local note_tab, note_pane_1 =
+					window:mux_window():spawn_tab({ cwd = home .. "/Documents/perso/@plaintext/vault" })
+				note_tab:set_title("notes")
+				note_pane_1:send_text("nvim .\n")
 			end),
 		},
 	}
