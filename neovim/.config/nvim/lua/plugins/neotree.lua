@@ -50,12 +50,5 @@ return {
         },
       }
     end,
-    keys = {
-      {
-        "<leader>e",
-        "<cmd>Neotree reveal<cr>",
-        desc = "Explorer Neotree (reveal)",
-      },
-    },
   },
 }
