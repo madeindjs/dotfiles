@@ -17,14 +17,6 @@ require("lazy").setup({
 
     -- setup Tree to the right
     {
-      "nvim-neo-tree/neo-tree.nvim",
-      opts = {
-        window = {
-          position = "right",
-        },
-      },
-    },
-    {
       "tokyonight.nvim",
       opts = {
         transparent = true,
