@@ -1,2 +1,3 @@
 neovim/.config/nvim/spell/*.spl
 neovim/.config/nvim/spell/*.sug
+mpv/.config/mpv/watch_later
