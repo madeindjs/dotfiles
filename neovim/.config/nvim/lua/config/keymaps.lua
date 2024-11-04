@@ -3,3 +3,4 @@
 -- Add any additional keymaps here
 vim.keymap.set("n", "<tab>", "<cmd>bnext<cr>", { desc = "Next buffer" })
 vim.keymap.set("n", "<S-tab>", "<cmd>bprevious<cr>", { desc = "Next buffer" })
+vim.keymap.set("n", "<leader>bn", "<cmd>enew<cr>", { desc = "Open a new buffer" })
