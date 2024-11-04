@@ -69,14 +69,31 @@ return {
         filesystem = {
           window = {
             mappings = {
-              ["t"] = "noop",
               -- add telescope shortcuts
+              ["t"] = "noop",
               ["tf"] = "telescope_find",
               ["tg"] = "telescope_grep",
+              -- add shortcuts to copy the path
+              ["y"] = "noop",
+              ["ya"] = "copy_absolute_path",
+              ["yr"] = "copy_relative_path",
             },
           },
         },
         commands = {
+          copy_absolute_path = function(state)
+            local node = state.tree:get_node()
+            local result = node:get_id()
+            vim.fn.setreg('"', result)
+            vim.notify("Copied: " .. result)
+          end,
+          copy_relative_path = function(state)
+            local node = state.tree:get_node()
+            local path = node:get_id()
+            local result = vim.fn.fnamemodify(path, ":.")
+            vim.fn.setreg('"', result)
+            vim.notify("Copied: " .. result)
+          end,
           telescope_find = function(state)
             local node = state.tree:get_node()
             local path = node:get_id()
