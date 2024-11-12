@@ -84,14 +84,14 @@ return {
           copy_absolute_path = function(state)
             local node = state.tree:get_node()
             local result = node:get_id()
-            vim.fn.setreg('"', result)
+            vim.fn.setreg("+", result)
             vim.notify("Copied: " .. result)
           end,
           copy_relative_path = function(state)
             local node = state.tree:get_node()
             local path = node:get_id()
             local result = vim.fn.fnamemodify(path, ":.")
-            vim.fn.setreg('"', result)
+            vim.fn.setreg("+", result)
             vim.notify("Copied: " .. result)
           end,
           telescope_find = function(state)
