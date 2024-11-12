@@ -60,6 +60,9 @@ return {
   },
   {
     "nvim-neo-tree/neo-tree.nvim",
+    keys = {
+      { "<C-k>", "<cmd>Neotree reveal<cr>", desc = "Show file in Tree" },
+    },
     dependencies = { "nvim-telescope/telescope.nvim" },
     opts = function()
       return {
