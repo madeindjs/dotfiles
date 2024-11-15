@@ -117,4 +117,25 @@ return {
       }
     end,
   },
+  {
+    "nvim-lualine/lualine.nvim",
+    opts = {
+      -- remove some elements to have more space for the path
+      sections = {
+        lualine_a = {},
+        lualine_c = {
+          LazyVim.lualine.root_dir(),
+          { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+          { LazyVim.lualine.pretty_path() },
+        },
+        lualine_b = {},
+        lualine_y = {
+          -- { "progress" },
+        },
+        lualine_z = {
+          { "location" },
+        },
+      },
+    },
+  },
 }
