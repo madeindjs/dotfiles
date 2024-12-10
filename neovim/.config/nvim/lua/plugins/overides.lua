@@ -154,4 +154,16 @@ return {
     "markdown-preview.nvim",
     enabled = false,
   },
+  {
+    "folke/snacks.nvim",
+    keys = {
+      {
+        "<leader>gw",
+        function()
+          require("snacks").gitbrowse({ notify = false })
+        end,
+        desc = "Open line in Github",
+      },
+    },
+  },
 }

@@ -1,9 +1,6 @@
 -- setup new plugins
 return {
   {
-    "almo7aya/openingh.nvim",
-  },
-  {
     "stevearc/oil.nvim",
     ---@module 'oil'
     ---@type oil.SetupOpts
