@@ -1,11 +1,11 @@
 local function get_notes_path()
   local dir1 = os.getenv("HOME") .. "/Documents/perso/@plaintext/vault"
 
-  if vim.fn.isdirectory(dir1) then
-    return dir1
+  if vim.fn.isdirectory(dir1) ~= false then
+    return os.getenv("HOME") .. "/Documents/@plaintext/vault"
   end
 
-  return os.getenv("HOME") .. "/Documents/@plaintext/vault"
+  return dir1
 end
 
 return {
