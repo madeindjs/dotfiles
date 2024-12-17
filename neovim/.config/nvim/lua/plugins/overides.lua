@@ -9,12 +9,6 @@ return {
     },
   },
   {
-    "garymjr/nvim-snippets",
-    opts = {
-      friendly_snippets = false,
-    },
-  },
-  {
     "mfussenegger/nvim-lint",
     opts = {
       linters = {
@@ -140,18 +134,6 @@ return {
   },
   {
     "catppuccin/nvim",
-    enabled = false,
-  },
-  {
-    "MeanderingProgrammer/render-markdown.nvim",
-    enabled = false,
-  },
-  {
-    "iamcco/markdown-preview.nvim",
-    enabled = false,
-  },
-  {
-    "markdown-preview.nvim",
     enabled = false,
   },
   {
