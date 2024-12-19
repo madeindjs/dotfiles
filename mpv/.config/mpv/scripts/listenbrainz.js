@@ -2,7 +2,7 @@
  * mpv script to send listen to musicbrainz.
  */
 var version = "2.0";
-var listenbrainzToken = mp.utils.getenv("MUSICBRAINZ_API_KEY"); // https://listenbrainz.org/profile/
+var listenbrainzToken = mp.utils.getenv("LISTENBRAINZ_USER_TOKEN"); // https://listenbrainz.org/profile/
 var minListenTime = 30 * 1000;
 
 mp.msg.debug("loaded");
