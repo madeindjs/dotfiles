@@ -5,6 +5,16 @@ local act = wezterm.action
 
 -- theme
 config.font_size = 11.0
+-- config.color_scheme = "Builtin Dark"
+-- config.color_scheme = "3024 (base16)"
+-- config.color_scheme = "Builtin Tango Dark"
+-- config.color_scheme = "Derp (terminal.sexy)"
+config.color_scheme = "Digerati (terminal.sexy)"
+
+config.inactive_pane_hsb = {
+	saturation = 0.7,
+	brightness = 0.8,
+}
 -- config.window_background_opacity = 0.9
 config.hide_tab_bar_if_only_one_tab = true
 config.use_fancy_tab_bar = false
