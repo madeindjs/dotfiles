@@ -74,6 +74,7 @@ return {
               ["y"] = "noop",
               ["ya"] = "copy_absolute_path",
               ["yr"] = "copy_relative_path",
+              ["yn"] = "copy_file_name",
             },
           },
         },
@@ -88,6 +89,13 @@ return {
             local node = state.tree:get_node()
             local path = node:get_id()
             local result = vim.fn.fnamemodify(path, ":.")
+            vim.fn.setreg("+", result)
+            vim.notify("Copied: " .. result)
+          end,
+          copy_file_name = function(state)
+            local node = state.tree:get_node()
+            local path = node:get_id()
+            local result = vim.fn.fnamemodify(path, ":t")
             vim.fn.setreg("+", result)
             vim.notify("Copied: " .. result)
           end,
