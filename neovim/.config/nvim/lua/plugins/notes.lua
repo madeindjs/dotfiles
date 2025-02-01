@@ -46,6 +46,13 @@ return {
         end,
         desc = "Open log (Writer)",
       },
+      {
+        "<leader>pt",
+        function()
+          vim.cmd("e " .. get_notes_path() .. "/../todo.txt")
+        end,
+        desc = "Open todos",
+      },
     },
   },
 }

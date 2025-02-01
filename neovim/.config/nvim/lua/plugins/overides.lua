@@ -41,6 +41,9 @@ return {
       { "V", desc = "Decrement Selection", mode = "x" },
     },
     opts = {
+      ensure_installed = {
+        "todotxt",
+      },
       incremental_selection = {
         enable = true,
         keymaps = {
