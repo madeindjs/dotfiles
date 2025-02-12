@@ -67,7 +67,7 @@ wezterm.on("augment-command-palette", function(window, pane)
 				local cwd = os.getenv("HOME") .. "/github/writer/writer-framework"
 				local code_tab, code_tab_pane_1, code_win = window:mux_window():spawn_tab({ cwd = cwd })
 				code_tab:set_title("nvim writer-framework")
-				code_tab_pane_1:send_text("nvim .\n")
+				code_tab_pane_1:send_text("poetry run nvim .\n")
 
 				local proc_tab, proc_tab_pane_1, proc_win = window:mux_window():spawn_tab({ cwd = cwd })
 				proc_tab:set_title("writer procs")
