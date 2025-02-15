@@ -15,3 +15,17 @@
   showSignature = true
 [core]
   editor = nvim
+[pull]
+  rebase = true
+[gc]
+  autoPackLimit = 50
+[rerere]
+  # Reuse Recorded Resolution
+  enabled = true
+[rebase]
+  autostash = true # Automatically stash changes before rebasing.
+[submodule]
+  recurse = true
+[core]
+  # Enable the file system monitor for better performance.
+  fsmonitor = true
