@@ -80,6 +80,24 @@ wezterm.on("augment-command-palette", function(window, pane)
 				code_tab:activate()
 			end),
 		},
+		{
+			brief = "[iSignif] Start isignif + chat",
+			icon = "cod_empty_window", -- https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
+			action = wezterm.action_callback(function(window, pane)
+				local cwd = os.getenv("HOME") .. "/github/isignif/chat"
+				local tab, tab_pane_1, code_win = window:mux_window():spawn_tab({ cwd = cwd })
+				tab:set_title("nvim writer-framework")
+				tab_pane_1:send_text("poetry run nvim .\n")
+
+				local tab_pane_2 = tab_pane_1:split({ direction = "Bottom", size = 0.25, cwd = cwd })
+				local tab_pane_3 = tab_pane_2:split({ direction = "Right", size = 0.5, cwd = cwd })
+				tab_pane_1:send_text("nvim .\n")
+				tab_pane_2:send_text("npm run dev")
+				tab_pane_3:send_text("cd ../website && rails s\n")
+
+				tab:activate()
+			end),
+		},
 	}
 end)
 
