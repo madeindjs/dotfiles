@@ -81,6 +81,26 @@ wezterm.on("augment-command-palette", function(window, pane)
 			end),
 		},
 		{
+			brief = "[WT] Start writer-framework@upstream",
+			icon = "cod_empty_window", -- https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
+			action = wezterm.action_callback(function(window, pane)
+				local cwd = os.getenv("HOME") .. "/github/writer/writer-framework@upstream"
+				local code_tab, code_tab_pane_1, code_win = window:mux_window():spawn_tab({ cwd = cwd })
+				code_tab:set_title("nvim writer-framework@up")
+				code_tab_pane_1:send_text("poetry run nvim .\n")
+
+				local proc_tab, proc_tab_pane_1, proc_win = window:mux_window():spawn_tab({ cwd = cwd })
+				proc_tab:set_title("writer procs")
+				local proc_tab_pane_2 = proc_tab_pane_1:split({ direction = "Bottom", size = 0.75, cwd = cwd })
+				local proc_tab_pane_3 = proc_tab_pane_2:split({ direction = "Right", size = 0.5, cwd = cwd })
+				proc_tab_pane_1:send_text("git status\n")
+				proc_tab_pane_2:send_text("poetry run writer edit playground/text-demo --port 5000\n")
+				proc_tab_pane_3:send_text("npm run dev\n")
+
+				code_tab:activate()
+			end),
+		},
+		{
 			brief = "[iSignif] Start isignif + chat",
 			icon = "cod_empty_window", -- https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
 			action = wezterm.action_callback(function(window, pane)
