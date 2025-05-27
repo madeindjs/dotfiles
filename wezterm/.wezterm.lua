@@ -93,19 +93,22 @@ wezterm.on("augment-command-palette", function(window, pane)
 		{
 			brief = "[iSignif] Start isignif + chat",
 			icon = "cod_empty_window", -- https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
-			action = wezterm.action_callback(function(window, pane)
-				local cwd = os.getenv("HOME") .. "/github/isignif/chat"
-				local tab, tab_pane_1, code_win = window:mux_window():spawn_tab({ cwd = cwd })
-				tab:set_title("nvim writer-framework")
-				tab_pane_1:send_text("poetry run nvim .\n")
+			action = wezterm.action_callback(function(window)
+				-- @param relative_path string: The path relative to the home directory.
+				-- @param bash_script string: The command to execute in the rails_pane_2.
+				local function setup_window(title, relative_path, bash_script)
+					local cwd = os.getenv("HOME") .. relative_path
+					local tab, pane_1 = window:mux_window():spawn_tab({ cwd = cwd })
+					tab:set_title(title)
+					pane_1:send_text("nvim .\n")
+					local pane_2 = pane_1:split({ direction = "Bottom", size = 0.25, cwd = cwd })
+					pane_2:send_text(bash_script .. "\n")
+					return tab
+				end
 
-				local tab_pane_2 = tab_pane_1:split({ direction = "Bottom", size = 0.25, cwd = cwd })
-				local tab_pane_3 = tab_pane_2:split({ direction = "Right", size = 0.5, cwd = cwd })
-				tab_pane_1:send_text("nvim .\n")
-				tab_pane_2:send_text("npm run dev")
-				tab_pane_3:send_text("cd ../website && rails s\n")
-
-				tab:activate()
+				local rails_tab = setup_window("isignif/rails", "/github/isignif/website", "rails s")
+				setup_window("isignif/ai", "/github/isignif/pdf-ai", "npm run dev")
+				rails_tab:activate()
 			end),
 		},
 	}
