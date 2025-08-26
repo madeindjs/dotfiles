@@ -159,4 +159,32 @@ return {
       },
     },
   },
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    enabled = false,
+    opts = {
+      bullet = {
+        enabled = false,
+      },
+      link = {
+        enabled = false,
+      },
+      code = {
+        enabled = false,
+      },
+      heading = {
+        sign = false,
+        icons = {},
+      },
+      checkbox = {
+        enabled = false,
+      },
+    },
+  },
+  {
+    "iamcco/markdown-preview.nvim",
+    enabled = false,
+  },
+
+  { "markdown-preview.nvim", enabled = false },
 }

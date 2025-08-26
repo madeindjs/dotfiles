@@ -44,8 +44,9 @@ return {
         function()
           vim.api.nvim_create_autocmd("BufWinEnter", {
             pattern = "*log.md",
+            once = true,
             callback = function()
-              vim.cmd("set foldlevel=0")
+              vim.cmd("setlocal foldlevel=0")
               vim.cmd("normal! gg") -- Move cursor to the first line
               vim.cmd("normal! zO") -- Open the fold under the cursor
             end,
