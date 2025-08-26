@@ -42,6 +42,14 @@ return {
       {
         "<leader>pw",
         function()
+          vim.api.nvim_create_autocmd("BufWinEnter", {
+            pattern = "*log.md",
+            callback = function()
+              vim.cmd("set foldlevel=0")
+              vim.cmd("normal! gg") -- Move cursor to the first line
+              vim.cmd("normal! zO") -- Open the fold under the cursor
+            end,
+          })
           vim.cmd("e " .. get_notes_path() .. "/@writer/log.md")
         end,
         desc = "Open log (Writer)",
