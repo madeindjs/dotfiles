@@ -8,3 +8,4 @@ opt.wrap = true
 opt.breakindent = true
 opt.breakindentopt = "shift:2"
 opt.spelllang = "en,fr"
+opt.conceallevel = 0
