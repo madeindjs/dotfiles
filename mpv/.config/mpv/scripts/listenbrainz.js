@@ -1,7 +1,7 @@
 /**
  * mpv script to send listen to musicbrainz.
  */
-var version = "2.0";
+var version = "3.0";
 var listenbrainzToken = mp.utils.getenv("LISTENBRAINZ_USER_TOKEN"); // https://listenbrainz.org/profile/
 var minListenTime = 30 * 1000;
 
@@ -19,7 +19,7 @@ function getTitle(metadata) {
   return title;
 }
 
-function submitListen() {
+function submitListen(listenType) {
   var metadata = mp.get_property_native("metadata");
   if (!metadata) return;
 
@@ -47,33 +47,31 @@ function submitListen() {
       JSON.stringify(metadata)
     );
 
-  var listenedAt = Math.floor(new Date().getTime() / 1000);
-
   var artistMbids = metadata["MUSICBRAINZ_ARTISTID"] ? metadata["MUSICBRAINZ_ARTISTID"].split(';') : [];
 
   var payload = {
-    listen_type: "single",
-    payload: [
-      {
-        listened_at: listenedAt,
-        track_metadata: {
-          additional_info: {
-            media_player: "mpv",
-            submission_client: "mpv ListenBrainz Plugin",
-            submission_client_version: version,
-            release_mbid: metadata["MUSICBRAINZ_RELEASETRACKID"],
-            artist_mbids: artistMbids,
-          },
-          artist_name: artist,
-          track_name: title,
-          release_name: album,
-        },
+    track_metadata: {
+      additional_info: {
+        media_player: "mpv",
+        submission_client: "mpv ListenBrainz Plugin",
+        submission_client_version: version,
+        release_mbid: metadata["MUSICBRAINZ_RELEASETRACKID"],
+        artist_mbids: artistMbids,
       },
-    ],
+      artist_name: artist,
+      track_name: title,
+      release_name: album,
+    },
   };
 
+  if (listenType === "single") {
+    payload.listened_at = Math.floor(new Date().getTime() / 1000)
+  }
+
+  var body = { listen_type: listenType, payload: [ payload, ] };
+
   // a way to escape chars
-  var payloasStr = "$(cat <<EOF\n" + JSON.stringify(payload) + "\nEOF)";
+  var payloasStr = "$(cat <<EOF\n" + JSON.stringify(body) + "\nEOF)";
 
   var command = [
     "curl",
@@ -94,11 +92,13 @@ function submitListen() {
   });
 
   if (res.status === 0) {
-    mp.msg.info("Track sent to musicbrainz", JSON.stringify(res));
+    mp.msg.info(listenType + " sent to musicbrainz");
   } else {
     mp.msg.warn(JSON.stringify(res));
   }
 }
+
+var onFileLoadedTimer;
 
 /**
  * Will starts a timeout and check if it's the same file played after 30s.
@@ -108,10 +108,14 @@ function onFileLoaded() {
   var title = getTitle();
   if (!title) return;
 
-  setTimeout(function watch() {
+  submitListen('playing_now')
+
+  if (onFileLoadedTimer) clearTimeout(onFileLoadedTimer);
+
+  onFileLoadedTimer = setTimeout(function watch() {
     var currentTitle = getTitle();
     if (currentTitle !== title) return;
-    submitListen();
+    submitListen('single');
   }, minListenTime);
 }
 
