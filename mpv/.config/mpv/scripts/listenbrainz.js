@@ -1,7 +1,20 @@
 /**
- * mpv script to send listen to musicbrainz.
+ * mpv script to submit listening activity to ListenBrainz (MusicBrainz's listening tracker).
+ *
+ * Features:
+ * - Automatically submits "playing_now" notifications when a file loads
+ * - Submits full "single" listen after 30 seconds of playback (configurable)
+ * - Handles MusicBrainz metadata when available
+ * - Requires LISTENBRAINZ_USER_TOKEN environment variable
+ *
+ * Place this file in `./config/mpv/scripts/listenbrainz.js`
+ *
+ * @version 3.1
+ * @requires mpv with JavaScript scripting support
+ * @see {@link https://listenbrainz.org|ListenBrainz}
+ * @see {@link https://musicbrainz.org|MusicBrainz}
  */
-var version = "3.0";
+var version = "3.1";
 var listenbrainzToken = mp.utils.getenv("LISTENBRAINZ_USER_TOKEN"); // https://listenbrainz.org/profile/
 var minListenTime = 30 * 1000;
 
@@ -20,6 +33,8 @@ function getTitle(metadata) {
 }
 
 function submitListen(listenType) {
+  if (!listenbrainzToken) return mp.msg.warn("LISTENBRAINZ_USER_TOKEN is not set");
+
   var metadata = mp.get_property_native("metadata");
   if (!metadata) return;
 
@@ -71,18 +86,18 @@ function submitListen(listenType) {
   var body = { listen_type: listenType, payload: [ payload, ] };
 
   // a way to escape chars
-  var payloasStr = "$(cat <<EOF\n" + JSON.stringify(body) + "\nEOF)";
+  var escapedJson = JSON.stringify(body).replace(/"/g, '\\"');
 
   var command = [
     "curl",
     "-X POST",
     "-H  'Authorization: Token " + listenbrainzToken + "'",
     "-H 'Content-Type: application/json'",
-    '--data "' + payloasStr + '"',
+    '--data "' + escapedJson + '"',
     "https://api.listenbrainz.org/1/submit-listens 2> /dev/null",
   ];
 
-  mp.msg.debug("send API call", command.join(" "));
+  mp.msg.info("send API call", command.join(" "));
 
   var res = mp.command_native({
     name: "subprocess",
