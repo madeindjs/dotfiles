@@ -76,6 +76,7 @@ function submitListen(listenType) {
       artist_name: artist,
       track_name: title,
       release_name: album,
+      duration: mp.get_property_native("duration"),
     },
   };
 
