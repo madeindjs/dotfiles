@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # find every audio file in the current directory which have a lower bitrate than the one specified
-set -e
+set -euo pipefail # Exit on Error / Treat Unset Variables as Error
 
 if ! which music-metadata-search >/dev/null 2>&1; then
   echo 'music-metadata-search not found. Install it "npm i -g music-metadata-search"'

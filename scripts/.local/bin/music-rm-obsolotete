@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail # Exit on Error / Treat Unset Variables as Error
 
 find . -type f -name "*.lrc" -print0 | while read -r -d $'\0' FILE; do
   DIR_NAME=$(dirname "$FILE")

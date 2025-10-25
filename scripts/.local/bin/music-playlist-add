@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail # Exit on Error / Treat Unset Variables as Error
 
 # I used to manage my playlist with a really simple system: I add `#tag` inside the `COMMENT` section of the music metadata.
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail # Exit on Error / Treat Unset Variables as Error
 otp=$(keepassxc-cli show -t ~/Documents/keepass.kdbx npm)
 npm publish --otp "$otp"
-

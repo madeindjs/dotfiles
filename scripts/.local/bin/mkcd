@@ -1,2 +1,8 @@
 #!/usr/bin/env bash
+# create a directory and move inside
+
+if [ -z "$1" ]; then
+  echo "need to specify the directory"
+  exit 1
+fi
 mkdir -p "$1" && cd "$1"

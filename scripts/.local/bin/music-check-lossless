@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail # Exit on Error / Treat Unset Variables as Error
 
 function has() {
   which "$1" >/dev/null 2>&1

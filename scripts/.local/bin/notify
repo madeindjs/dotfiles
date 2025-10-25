@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail # Exit on Error / Treat Unset Variables as Error
 
 /usr/bin/osascript -e "display notification \"$1\" with title \"$2\""
-
