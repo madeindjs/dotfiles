@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -euo pipefail # Exit on Error / Treat Unset Variables as Error
+
+if [ -z "$1" ]; then
+  echo "need to specify the script name"
+  exit 1
+fi
+
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
+SCRIPT_PATH="$SCRIPT_DIR/$1"
+
+if [ ! -f "$SCRIPT_PATH" ]; then
+  cat <<'EOF' >"$SCRIPT_PATH"
+#!/usr/bin/env bash
+# description of the script
+
+set -euo pipefail # Exit on Error / Treat Unset Variables as Error
+
+if [ -z "$1" ]; then
+  echo "need to specify the arg"
+  exit 1
+fi
+
+echo "OK"
+EOF
+  chmod u+x "$SCRIPT_PATH"
+  stow -t "$HOME" scripts
+fi
+
+nvim "$SCRIPT_PATH"
