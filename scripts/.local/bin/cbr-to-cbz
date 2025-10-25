@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -e
+
+file="$1"
+
+if [ -z "$file" ]; then
+  echo "need to specify the file"
+  exit 1
+fi
+
+uncompressed_folder="$(mktemp -d)"
+cbz_filename="$file.cbz"
+
+unrar e "$file" "$uncompressed_folder/"
+
+outcbz="$(mktemp)"
+rm "$outcbz"
+
+zip -r "$outcbz" "$uncompressed_folder/"
+
+mv "$outcbz" "$cbz_filename"
+
+read -rp "Remove the original file? (y/N)" CONFIRM
+
+if [[ -z $CONFIRM || "$CONFIRM" = "y" ]]; then
+  rm "$file"
+fi

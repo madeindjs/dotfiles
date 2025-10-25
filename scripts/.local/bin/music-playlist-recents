@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+find . -type f -ctime -14d | mpv --vo=null --video=no --no-video --term-osd-bar --no-resume-playback --playlist=-

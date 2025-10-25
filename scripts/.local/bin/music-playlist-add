@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -e
+
+# I used to manage my playlist with a really simple system: I add `#tag` inside the `COMMENT` section of the music metadata.
+
+FILE="$1"
+
+if [ -z "$FILE" ]; then
+  echo "Please enter a file as first arg" 1>&2
+  exit 1
+fi
+
+TAG="$2"
+
+if [ -z "$TAG" ]; then
+  echo "Please enter a tag as second arg" 1>&2
+  exit 1
+fi
+
+function get_comment() {
+  metaflac "$FILE" --show-tag COMMENT | sed "s/COMMENT=//"
+}
+
+metaflac --remove-tag="COMMENT" --set-tag="COMMENT=$(get_comment) #$TAG" "$FILE"
+
+echo $(get_comment)

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+scp "isignif:/mnt/disk-1/saves/isignif_$(date +%Y-%m-%d).tar.gz.gpg" "$HOME/saves/"
+
