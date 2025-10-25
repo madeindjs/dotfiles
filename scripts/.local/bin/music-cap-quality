@@ -1,0 +1,20 @@
+#!/usr/bin/env bash -x
+
+shopt -s failglob
+MAX_HZ=48000
+
+function set_sample_rate() {
+  local file="$1"
+  local tmp_file="$file.$MAX_HZ.flac"
+  ffmpeg -hide_banner -loglevel error -i "$file" -ar "$MAX_HZ" "$tmp_file"
+  mv "$tmp_file" "$file"
+}
+
+FILES="$(music-metadata-search -w '"sampleRate" > 48000' --cache-scan-ttl=0 .)"
+
+IFS=$'\n'
+for FILE in $FILES; do
+  set_sample_rate "$FILE"
+done
+
+rm db.sqlite

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash -x
+
+function has() {
+  which "$1" >/dev/null 2>&1
+}
+
+function check_deps() {
+  if ! has "LAC"; then
+    echo "You need to install LAC https://losslessaudiochecker.com/" >&2
+    exit 1
+  fi
+  if ! has "ffmpeg"; then
+    echo "You need to install ffmpeg" >&2
+    exit 1
+  fi
+}
+
+check_deps
+
+function check_file() {
+  ffmpeg -y -i "$1" -loglevel panic -hide_banner /tmp/music-check-lossless.wav
+  result="$(LAC /tmp/music-check-lossless.wav | tail -n 1)"
+  echo "$result"
+}
+
+find . -type f -name "*.flac" -print0 | while read -d $'\0' file; do
+  status="$(check_file "$file")"
+  if [[ "$status" == "Result: Clean" ]]; then
+    echo "✅ $file"
+  else
+    echo "❌ $file => $status"
+  fi
+done

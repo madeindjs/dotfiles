@@ -1,0 +1,18 @@
+#!/usr/bin/env bash -eux
+
+find . -type f -name "*.lrc" -print0 | while read -r -d $'\0' FILE; do
+  DIR_NAME=$(dirname "$FILE")
+  BASE_NAME=$(basename "$FILE")
+  BASE_NAME_WITHOUT_EXTENSION="${BASE_NAME%.*}"
+  COUNT=$(find "$DIR_NAME" -type f -name "${BASE_NAME_WITHOUT_EXTENSION}*" | wc -l | tr -d ' ')
+
+  if [[ "$COUNT" == 1 ]]; then
+    echo "$FILE"
+    rm "$FILE"
+  fi
+done
+
+find . -empty -type d -print0 | while read -r -d $'\0' FILE; do
+  echo "$FILE"
+  # rm -r "$FILE"
+done
