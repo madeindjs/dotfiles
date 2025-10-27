@@ -1,2 +1,26 @@
 #!/usr/bin/env bash
-find . -type f -ctime -14d | mpv --vo=null --video=no --no-video --term-osd-bar --no-resume-playback --playlist=-
+
+MPV_FLAGS=""
+PROFILE="music"
+
+# Check if --shuffle is passed as an argument
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+  --shuffle) MPV_FLAGS="--shuffle" ;;
+  --profile=*) PROFILE="${1#*=}" ;;
+
+  *)
+    echo "Unknown parameter passed: $1"
+    exit 1
+    ;;
+  esac
+  shift
+done
+
+# Validate profile
+if [[ "$PROFILE" != "music" && "$PROFILE" != "music-tv" ]]; then
+  echo "Error: --profile must be either 'music' or 'music-tv'" >&2
+  exit 1
+fi
+
+find . -type f \( -name "*.mp3" -o -name "*.flac" -o -name "*.ogg" -o -name "*.m4a" -o -name "*.wav" \) -ctime -14d | mpv --profile="$PROFILE" --playlist=- $MPV_FLAGS

@@ -1,0 +1,8 @@
+#compdef music-playlist-recents
+
+local arguments=(
+  '--shuffle[shuffle the playlist]'
+  '--profile=[specify the mpv profile]:profile:(music music-tv)'
+)
+
+_arguments "${arguments[@]}"
