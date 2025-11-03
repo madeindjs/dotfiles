@@ -159,7 +159,7 @@ model: codestral/codestral-latest
 # Output settings:
 
 ## Use colors suitable for a dark terminal background (default: False)
-#dark-mode: false
+dark-mode: true
 
 ## Use colors suitable for a light terminal background (default: False)
 #light-mode: false
@@ -198,7 +198,7 @@ model: codestral/codestral-latest
 #completion-menu-current-bg-color: "xxx"
 
 ## Set the markdown code theme (default: default, other options include monokai, solarized-dark, solarized-light, or a Pygments builtin style, see https://pygments.org/styles for available themes)
-#code-theme: default
+code-theme: github-dark
 
 ## Show diffs when committing changes (default: False)
 #show-diffs: false
@@ -256,7 +256,6 @@ auto-commits: false
 
 ## Enable/disable watching files for ai coding comments (default: False)
 watch-files: true
-
 ########################
 # Fixing and committing:
 

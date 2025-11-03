@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# description of the script
+
+set -euo pipefail # Exit on Error / Treat Unset Variables as Error
+
+if [ -z "$1" ]; then
+  echo "need to specify the genre"
+  exit 1
+fi
+
+music-metadata-search ~/Musique/ -g "$1" | mpv --profile=music-tv --playlist=- --shuffle

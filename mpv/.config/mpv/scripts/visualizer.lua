@@ -7,7 +7,7 @@ local opts = {
 	-- novideo          enable visualization when no video
 	-- force            always enable visualization
 
-	name = "showcqt",
+	name = "off",
 	-- off
 	-- showcqt
 	-- avectorscope
@@ -15,14 +15,14 @@ local opts = {
 	-- showcqtbar
 	-- showwaves
 
-	quality = "high",
+	quality = "medium",
 	-- verylow
 	-- low
 	-- medium
 	-- high
 	-- veryhigh
 
-	height = 6,
+	height = 10,
 	-- [4 .. 12]
 
 	forcewindow = true,
