@@ -32,4 +32,24 @@ local function add_tag_handler()
 	end
 end
 
+local has_script = mp.command_native({
+	name = "subprocess",
+	capture_stdout = true,
+	capture_stderr = true,
+	args = { "which", "music-playlist-add" },
+})
+if has_script.status ~= 0 then
+	mp.msg.warn("has_metaflac not found")
+end
+
+local has_metaflac = mp.command_native({
+	name = "subprocess",
+	capture_stdout = true,
+	capture_stderr = true,
+	args = { "which", "metaflac" },
+})
+if has_metaflac.status ~= 0 then
+	mp.msg.warn("music-playlist-add not found")
+end
+
 mp.add_key_binding("a", "playlist-m3u", add_tag_handler)
