@@ -98,7 +98,7 @@ function submitListen(listenType) {
     "https://api.listenbrainz.org/1/submit-listens 2> /dev/null",
   ];
 
-  mp.msg.info("send API call", command.join(" "));
+  mp.msg.debug("send API call", command.join(" "));
 
   var res = mp.command_native({
     name: "subprocess",
