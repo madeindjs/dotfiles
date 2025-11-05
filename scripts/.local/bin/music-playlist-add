@@ -1,17 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail # Exit on Error / Treat Unset Variables as Error
-
-# I used to manage my playlist with a really simple system: I add `#tag` inside the `COMMENT` section of the music metadata.
-
+# Toggle a #tag in the COMMENT section of the music metadata.
 FILE="$1"
-
 if [ -z "$FILE" ]; then
   echo "Please enter a file as first arg" 1>&2
   exit 1
 fi
-
 TAG="$2"
-
 if [ -z "$TAG" ]; then
   echo "Please enter a tag as second arg" 1>&2
   exit 1
@@ -21,6 +16,18 @@ function get_comment() {
   metaflac "$FILE" --show-tag COMMENT | sed "s/COMMENT=//"
 }
 
-metaflac --remove-tag="COMMENT" --set-tag="COMMENT=$(get_comment) #$TAG" "$FILE"
+CURRENT_COMMENT=$(get_comment)
 
-echo $(get_comment)
+# Check if the tag already exists in the comment
+if [[ "$CURRENT_COMMENT" == *"#$TAG"* ]]; then
+  # Remove the tag
+  NEW_COMMENT=$(echo "$CURRENT_COMMENT" | sed "s/#$TAG//g" | sed 's/  */ /g' | sed 's/^ //;s/ $//')
+  metaflac --remove-tag="COMMENT" --set-tag="COMMENT=$NEW_COMMENT" "$FILE"
+  echo "Tag #$TAG removed."
+else
+  # Add the tag
+  metaflac --remove-tag="COMMENT" --set-tag="COMMENT=${CURRENT_COMMENT} #$TAG" "$FILE"
+  echo "Tag #$TAG added."
+fi
+
+echo "$(get_comment)"
