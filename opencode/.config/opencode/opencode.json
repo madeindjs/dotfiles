@@ -1,6 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "openrouter/qwen/qwen3-coder",
+  "model": "openrouter/x-ai/grok-code-fast-1",
+  "small_model": "openrouter/qwen/qwen3-coder",
+  "share": "disabled",
   "theme": "system",
   "permission": {
     "bash": {
