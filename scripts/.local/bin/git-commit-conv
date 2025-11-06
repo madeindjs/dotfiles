@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail # Exit on Error / Treat Unset Variables as Error
+
+DESCRIPTION="$1"
+TYPE="$2"
+SCOPE="$3"
+JIRA=""
+
+if [[ -z $DESCRIPTION ]]; then
+  read -rp "Enter a description (WIP): " DESCRIPTION
+  if [[ -z $DESCRIPTION ]]; then DESCRIPTION="WIP"; fi
+fi
+
+if [[ -z $TYPE ]]; then
+  read -rp "Enter a type (feat): " TYPE
+  if [[ -z $TYPE ]]; then TYPE="feat"; fi
+fi
+
+# DEFAULT_SCOPE=$(basename $PWD)
+DEFAULT_SCOPE=$(npm pkg get name | head -n 1 | sed 's/"//g' | awk -F'/' '{print $2}' | sed 's/app-//')
+
+if [[ -z $SCOPE ]]; then
+  read -p "Enter a scope ($DEFAULT_SCOPE): " SCOPE
+  if [[ -z $SCOPE ]]; then SCOPE="$DEFAULT_SCOPE"; fi
+fi
+
+DEFAULT_JIRA=$(git rev-parse --abbrev-ref HEAD | awk -F'-' -v OFS="-" '{print $1,$2}')
+
+read -rp "Enter a Jira ID ($DEFAULT_JIRA): " JIRA
+if [[ -z $JIRA ]]; then JIRA="$DEFAULT_JIRA"; fi
+
+MESSAGE="$TYPE($SCOPE): $DESCRIPTION. $JIRA"
+
+if [[ -z "$(git diff --name-only --cached)" ]]; then
+  echo "There is no staged changes.  Please stage and hit any key to continue"
+  read
+fi
+
+echo "---"
+
+read -rp "I will make a commit named '$MESSAGE'. Are you sure? (y) " CONFIRM
+
+if [[ -z $CONFIRM || "$CONFIRM" = "y" ]]; then
+  git commit -nm "$MESSAGE"
+else
+  echo "abort"
+fi
