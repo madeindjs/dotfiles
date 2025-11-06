@@ -51,7 +51,7 @@ return {
               vim.cmd("normal! zO") -- Open the fold under the cursor
             end,
           })
-          vim.cmd("e " .. get_notes_path() .. "/@writer/log.md")
+          vim.cmd("e " .. get_notes_path() .. "/@writer/logs/" .. os.date("%yW%V") .. ".md")
         end,
         desc = "Open log (Writer)",
       },
