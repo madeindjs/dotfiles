@@ -1,0 +1,8 @@
+# yazi.toml
+[mgr]
+show_hidden = true
+
+[opener]
+play = [
+	{ run = 'mpv --profile=music "$@"', block = true, for = "unix", desc = "open with MPV" },
+]
