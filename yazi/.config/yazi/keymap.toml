@@ -1,0 +1,5 @@
+[mgr]
+prepend_keymap = [
+  { on = ["m"], run = 'shell --block -- mpv --profile=music "$@"', desc = "Open directory in mpv" },
+  { on = ["M"], run = 'shell --block -- mpv --profile=music-tv "$@"', desc = "Open directory in mpv" },
+]
