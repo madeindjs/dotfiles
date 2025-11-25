@@ -13,20 +13,23 @@ async function main() {
   console.log(`**My Sprint: On track :large_green_circle:**\n`);
   console.log(`**Tickets I finished yesterday:**\n`);
   await displayIssues(
-    await fetchIssues('status CHANGED FROM "In Progress" AFTER startOfDay(-1)'),
+    await fetchIssues(
+      'status CHANGED FROM "In Progress" AFTER startOfDay(-1) AND ( assignee = currentUser() OR assignee was currentUser() )',
+    ),
     true,
   );
   console.log();
   console.log(`**Tickets I will finish today:**\n`);
-  await displayIssues(await fetchIssues('status = "In Progress" '));
   await displayIssues(
-    await fetchIssues('status CHANGED TO "In Progress" AFTER startOfDay()'),
+    await fetchIssues(
+      'assignee = currentUser() AND (status = "In Progress" OR status CHANGED TO "In Progress" AFTER startOfDay())',
+    ),
   );
 }
 
 async function fetchIssues(jql) {
   const params = new URLSearchParams({
-    jql: `assignee = currentUser() AND project = 'AB' AND issuetype != "Epic" AND ${jql}`,
+    jql: `project = 'AB' AND issuetype != "Epic" AND ${jql}`,
     fields: `summary,status`,
   });
 
@@ -49,7 +52,7 @@ async function displayIssues(tasks, displayStatus = false) {
 }
 
 function formatIssue(issue, displayStatus = false) {
-  let text = `[${issue.fields.summary}](${JIRA_URL}/browse/${issue.key})`;
+  let text = `- [${issue.fields.summary}](${JIRA_URL}/browse/${issue.key})`;
   if (displayStatus) text += `, moved to "${issue.fields.status.name}"`;
   return text;
 }
