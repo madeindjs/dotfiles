@@ -4,6 +4,7 @@ set -euo pipefail # Exit on Error / Treat Unset Variables as Error
 
 if ! which music-metadata-search >/dev/null 2>&1; then
   echo 'music-metadata-search not found. Install it "npm i -g music-metadata-search"'
+  exit 1
 fi
 
 music-metadata-search . -w 'bitrate < 320000' --format json | jq -r '.[] | "\(.path), \(.bitrate/1000 | round) kb/s , " ' | sort

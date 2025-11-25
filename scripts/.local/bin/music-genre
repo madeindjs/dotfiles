@@ -3,9 +3,14 @@
 
 set -euo pipefail # Exit on Error / Treat Unset Variables as Error
 
+if ! which music-metadata-search >/dev/null 2>&1; then
+  echo 'music-metadata-search not found. Install it "npm i -g music-metadata-search"'
+  exit 1
+fi
+
 if [ -z "$1" ]; then
   echo "need to specify the genre"
   exit 1
 fi
 
-music-metadata-search ~/Musique/ -g "$1" | mpv --profile=music-tv --playlist=- --shuffle
+music-metadata-search ~/Musique/ -g "$1" | mpv --profile=music --playlist=- --shuffle
