@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+// @ts-check
+
+// @ts-ignore
+const { JIRA_URL, JIRA_EMAIL, JIRA_API_KEY } = process.env;
+if (!JIRA_URL) throw Error("JIRA_URL is not defined");
+if (!JIRA_EMAIL) throw Error("JIRA_EMAIL is not defined");
+if (!JIRA_API_KEY) throw Error("JIRA_API_KEY is not defined");
+
+main().catch(console.error);
+
+async function main() {
+  console.log(`**My Sprint: On track :large_green_circle:**\n`);
+  console.log(`**Tickets I finished yesterday:**\n`);
+  await displayIssues(
+    await fetchIssues('status CHANGED FROM "In Progress" AFTER startOfDay(-1)'),
+    true,
+  );
+  console.log();
+  console.log(`**Tickets I will finish today:**\n`);
+  await displayIssues(await fetchIssues('status = "In Progress" '));
+  await displayIssues(
+    await fetchIssues('status CHANGED TO "In Progress" AFTER startOfDay()'),
+  );
+}
+
+async function fetchIssues(jql) {
+  const params = new URLSearchParams({
+    jql: `assignee = currentUser() AND project = 'AB' AND issuetype != "Epic" AND ${jql}`,
+    fields: `summary,status`,
+  });
+
+  // @ts-ignore
+  const auth = Buffer.from(`${JIRA_EMAIL}:${JIRA_API_KEY}`).toString("base64");
+  const res = await fetch(`${JIRA_URL}/rest/api/3/search/jql?${params}`, {
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) throw Error(await res.text());
+  return res.json();
+}
+
+async function displayIssues(tasks, displayStatus = false) {
+  for (const issue of tasks.issues) {
+    console.log(formatIssue(issue, displayStatus));
+  }
+}
+
+function formatIssue(issue, displayStatus = false) {
+  let text = `[${issue.fields.summary}](${JIRA_URL}/browse/${issue.key})`;
+  if (displayStatus) text += `, moved to "${issue.fields.status.name}"`;
+  return text;
+}
