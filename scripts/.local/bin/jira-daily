@@ -10,16 +10,22 @@ if (!JIRA_API_KEY) throw Error("JIRA_API_KEY is not defined");
 main().catch(console.error);
 
 async function main() {
-  console.log(`**My Sprint: On track :large_green_circle:**\n`);
-  console.log(`**Tickets I finished yesterday:**\n`);
+  console.log(`*My Sprint: On track :large_green_circle:*\n`);
+  const isMonday = new Date().getDay() === 1;
+  if (isMonday) {
+    console.log(`*Tickets I finished on Friday:*\n`);
+  } else {
+    console.log(`*Tickets I finished yesterday:*\n`);
+  }
+
   await displayIssues(
     await fetchIssues(
-      'status CHANGED FROM "In Progress" AFTER startOfDay(-1) AND ( assignee = currentUser() OR assignee was currentUser() )',
+      `status CHANGED FROM "In Progress" AFTER startOfDay(${isMonday ? -3 : -1}) AND ( assignee = currentUser() OR assignee was currentUser() )`,
     ),
     true,
   );
   console.log();
-  console.log(`**Tickets I will finish today:**\n`);
+  console.log(`*Tickets I will finish today:*\n`);
   await displayIssues(
     await fetchIssues(
       'assignee = currentUser() AND (status = "In Progress" OR status CHANGED TO "In Progress" AFTER startOfDay())',
