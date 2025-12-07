@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail # Exit on Error / Treat Unset Variables as Error
+
+playlists=$(curl https://api.listenbrainz.org/1/user/madeindjs/playlists/createdfor --silent | jq '.playlists')
+playlist_jam_id=$(echo "$playlists" | jq -r '[.[].playlist | select(.extension."https://musicbrainz.org/doc/jspf#playlist".additional_metadata.algorithm_metadata.source_patch == "weekly-jams")][0] | .identifier' | sed -e 's|https://listenbrainz.org/playlist/||')
+
+playlist_jam=$(curl --silent "https://api.listenbrainz.org/1/playlist/$playlist_jam_id")
+records=$(echo "$playlist_jam" | jq -r '.playlist.track.[].identifier[]' | sed -e 's|https://musicbrainz.org/recording/||')
+
+for record_id in $records; do
+  music-metadata-search ~/Musique/ --musicbrainzRecordingId "$record_id"
+done
+
+# import { search } from "npm:music-metadata-search";
+#
+# const weeklyJam = await getWeeklyJam();
+# const playlistId = weeklyJam.identifier.replace(
+#   "https://listenbrainz.org/playlist/",
+#   "",
+# );
+# const tracks = await getPlaylistTracks(playlistId);
+# for (const track of tracks) {
+#   console.log(track);
+#   const match = await search({
+#     where: `musicbrainzTrackId = 1`,
+#   });
+# }
+# console.log(tracks);
+#
+# async function getWeeklyJam() {
+#   const res = await fetch(
+#     "https://api.listenbrainz.org/1/user/madeindjs/playlists/createdfor",
+#   );
+#   if (!res.ok) throw Error();
+#   const { playlists } = await res.json();
+#   return playlists
+#     .map((p) => p.playlist)
+#     .find((playlist) => {
+#       return (
+#         playlist.extension["https://musicbrainz.org/doc/jspf#playlist"]
+#           .additional_metadata.algorithm_metadata.source_patch === "weekly-jams"
+#       );
+#     });
+# }
+#
+# async function getPlaylistTracks(id) {
+#   console.log(id);
+#   const res = await fetch(`https://api.listenbrainz.org/1/playlist/${id}`);
+#   if (!res.ok) throw Error();
+#   const data = await res.json();
+#   return data.playlist.track;
+# }
