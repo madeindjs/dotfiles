@@ -1,0 +1,12 @@
+{
+  "logoAnimation": "off",
+  "completionSound": "off",
+  "awaitingInputSound": "off",
+  "soundFocusMode": "focused",
+  "enabledPlugins": {
+    "eng@skills": true
+  },
+  "sessionDefaultSettings": {
+    "autonomyMode": "auto-medium"
+  }
+}
