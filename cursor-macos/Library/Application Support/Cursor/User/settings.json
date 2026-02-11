@@ -1,0 +1,40 @@
+{
+    "window.commandCenter": true,
+    "workbench.colorTheme": "AMOLED",
+    "git.confirmSync": false,
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false,
+    "vim.neovimUseConfigFile": true,
+    "vim.useSystemClipboard": true,
+    "git.suggestSmartCommit": false,
+    "git.replaceTagsWhenPull": true,
+    "editor.formatOnPaste": true,
+    "editor.wordWrap": "on",
+    "vim.handleKeys": {
+        "<C-c>": false,
+        "<C-f>": false,
+        "<C-n>": false,
+        "<C-w>": false,
+        "<C-x>": false
+    },
+    "vim.normalModeKeyBindings": [
+        {
+            "before": ["<S-k>"],
+            "commands": ["editor.action.peekDefinition"]
+        }
+    ],
+    "terminal.integrated.scrollback": 100000,
+    "workbench.editor.enablePreview": false,
+    "diffEditor.renderSideBySide": false,
+    "git.openRepositoryInParentFolders": "never",
+"terminal.integrated.commandsToSkipShell": [
+    "workbench.action.focusActiveEditorGroup",
+],
+"javascript.updateImportsOnFileMove.enabled": "always",
+"diffEditor.ignoreTrimWhitespace": false,
+"gitlens.showWhatsNewAfterUpgrades": false,
+"gitlens.plusFeatures.enabled": false,
+"gitlens.virtualRepositories.enabled": false,
+"gitlens.codeLens.enabled": false,
+"gitlens.rebaseEditor.openOnPausedRebase": false,
+}
