@@ -19,6 +19,40 @@ config.inactive_pane_hsb = {
 config.hide_tab_bar_if_only_one_tab = true
 config.use_fancy_tab_bar = false
 
+-- Custom tab title with active process indicator
+local shells = { "zsh", "bash", "fish", "sh", "dash", "ksh", "tcsh", "csh", "nvim" }
+local function is_shell(process_name)
+	if not process_name then
+		return true
+	end
+	local name = process_name:match("([^/]+)$") or process_name
+	for _, shell in ipairs(shells) do
+		if name == shell or name == "-" .. shell then
+			return true
+		end
+	end
+	return false
+end
+
+wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
+	local pane = tab.active_pane
+	local title = tab.tab_title
+	if not title or #title == 0 then
+		title = pane.title
+	end
+
+	local process_name = pane.foreground_process_name
+	local name = process_name and (process_name:match("([^/]+)$") or process_name) or ""
+	local process_indicator = ""
+	if name == "mpv" then
+		process_indicator = "🎵"
+	elseif not is_shell(process_name) then
+		process_indicator = "⏳"
+	end
+
+	return process_indicator .. title
+end)
+
 -- misc
 config.check_for_updates = false
 -- config.exit_behavior = "CloseOnCleanExit"
