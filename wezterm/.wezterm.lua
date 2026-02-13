@@ -20,7 +20,7 @@ config.hide_tab_bar_if_only_one_tab = true
 config.use_fancy_tab_bar = true
 
 -- Custom tab title with active process indicator
-local shells = { "zsh", "bash", "fish", "sh", "dash", "ksh", "tcsh", "csh", "nvim" }
+local shells = { "zsh", "bash", "fish", "sh", "dash", "ksh", "tcsh", "csh", "nvim", "uv run nvim" }
 local function is_shell(process_name)
 	if not process_name then
 		return true
@@ -54,7 +54,7 @@ wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_wid
 end)
 
 -- misc
-config.check_for_updates = false
+config.check_for_updates = true
 -- config.exit_behavior = "CloseOnCleanExit"
 
 -- mac os
@@ -95,21 +95,6 @@ wezterm.on("augment-command-palette", function(window, pane)
 			}),
 		},
 		{
-			brief = "[WT] Start writer-framework",
-			icon = "cod_empty_window", -- https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
-			action = wezterm.action_callback(function(window, pane)
-				local cwd = os.getenv("HOME") .. "/github/writer/writer-framework"
-				local proc_tab, proc_tab_pane_1, proc_win = window:mux_window():spawn_tab({ cwd = cwd })
-				proc_tab:set_title("WF")
-				local proc_tab_pane_2 = proc_tab_pane_1:split({ direction = "Bottom", size = 0.25, cwd = cwd })
-				local proc_tab_pane_3 = proc_tab_pane_2:split({ direction = "Right", size = 0.5, cwd = cwd })
-				proc_tab_pane_1:send_text("poetry run nvim .\n")
-				proc_tab_pane_2:send_text("poetry run writer edit playground/text-demo --port 5000\n")
-				proc_tab_pane_3:send_text("npm run dev\n")
-				proc_tab:activate()
-			end),
-		},
-		{
 			brief = "[WT] Start writer-framework@upstream",
 			icon = "cod_empty_window", -- https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
 			action = wezterm.action_callback(function(window, pane)
@@ -122,6 +107,38 @@ wezterm.on("augment-command-palette", function(window, pane)
 				proc_tab_pane_2:send_text("poetry run writer edit playground/text-demo --port 5000\n")
 				proc_tab_pane_3:send_text("npm run dev\n")
 				proc_tab:activate()
+			end),
+		},
+		{
+			brief = "[WT] Start fs.action-ai",
+			icon = "cod_empty_window", -- https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
+			action = wezterm.action_callback(function(window, pane)
+				local cwd = os.getenv("HOME") .. "/github/writer/fs.action-ai"
+				local editor_tab, editor_tab_pane_1, proc_win = window:mux_window():spawn_tab({ cwd = cwd })
+
+				editor_tab_pane_1:send_text("uv run nvim .\n")
+
+				editor_tab:set_title("action-ai")
+				editor_tab:activate()
+
+				local proc_tab, proc_tab_pane_1, proc_win = window:mux_window():spawn_tab({ cwd = cwd })
+				proc_tab:set_title("action-ai bg")
+				local proc_tab_pane_3 = proc_tab_pane_1:split({ direction = "Bottom", size = 0.75, cwd = cwd })
+				local proc_tab_pane_5 = proc_tab_pane_3:split({ direction = "Bottom", size = 0.5, cwd = cwd })
+				local proc_tab_pane_2 = proc_tab_pane_1:split({ direction = "Right", size = 0.5, cwd = cwd })
+				local proc_tab_pane_4 =
+					proc_tab_pane_3:split({ direction = "Right", size = 0.5, cwd = cwd .. "/frontend" })
+				local proc_tab_pane_6 =
+					proc_tab_pane_5:split({ direction = "Right", size = 0.5, cwd = cwd .. "/backend" })
+
+				proc_tab_pane_1:send_text(
+					"./alloydb-auth-proxy instance_uri=projects/qordoba-devel/locations/us-central1/clusters/alloydb-dev-1/instances/primary -p=5453"
+				)
+				proc_tab_pane_2:send_text("gcloud auth login && kubectl proxy")
+				proc_tab_pane_3:send_text("docker compose up --remove-orphans redis")
+				proc_tab_pane_4:send_text("pnpm dev")
+				proc_tab_pane_5:send_text("uv run dramatiq --processes 1 --threads 1 run_agent_background")
+				proc_tab_pane_6:send_text("uv run uvicorn api:app --reload --host 0.0.0.0 --port 8000")
 			end),
 		},
 		{
