@@ -5,6 +5,7 @@
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
     "vim.neovimUseConfigFile": true,
+    "keyboard.dispatch": "keyCode",
     "vim.useSystemClipboard": true,
     "git.suggestSmartCommit": false,
     "git.replaceTagsWhenPull": true,
@@ -14,6 +15,7 @@
         "<C-c>": false,
         "<C-f>": false,
         "<C-n>": false,
+        "<C-p>": false,
         "<C-w>": false,
         "<C-x>": false
     },
