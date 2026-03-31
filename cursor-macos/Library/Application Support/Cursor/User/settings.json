@@ -39,4 +39,19 @@
 "gitlens.virtualRepositories.enabled": false,
 "gitlens.codeLens.enabled": false,
 "gitlens.rebaseEditor.openOnPausedRebase": false,
+"[vue]": {
+    "editor.defaultFormatter": "Vue.volar"
+},
+"[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+},
+"[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+},
+"[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+},
+"[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+},
 }
