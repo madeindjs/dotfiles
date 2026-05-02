@@ -5,14 +5,17 @@ local act = wezterm.action
 
 -- theme
 config.font_size = 11.0
--- config.color_scheme = "Builtin Dark"
--- config.color_scheme = "3024 (base16)"
--- config.color_scheme = "Builtin Tango Dark"
--- config.color_scheme = "Derp (terminal.sexy)"
-config.color_scheme = "Digerati (terminal.sexy)"
+config.color_scheme = "tokyonight"
+config.colors = {
+	-- The default background color
+	background = "black",
+	foreground = "white",
+}
+-- config.color_scheme = "Twilight"
+-- config.color_scheme = "Tangoesque (terminal.sexy)"
 
 config.inactive_pane_hsb = {
-	saturation = 0.7,
+	saturation = 0.5,
 	brightness = 0.8,
 }
 -- config.window_background_opacity = 0.9
