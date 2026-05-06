@@ -11,14 +11,10 @@ config.colors = {
 	background = "black",
 	foreground = "white",
 }
--- config.color_scheme = "Twilight"
--- config.color_scheme = "Tangoesque (terminal.sexy)"
-
 config.inactive_pane_hsb = {
 	saturation = 0.5,
 	brightness = 0.8,
 }
--- config.window_background_opacity = 0.9
 config.hide_tab_bar_if_only_one_tab = true
 config.use_fancy_tab_bar = true
 
@@ -49,6 +45,11 @@ config.keys = {
 		key = "Enter",
 		mods = "SHIFT",
 		action = act.SendKey({ key = "Enter", mods = "SHIFT" }),
+	},
+	{
+		key = "w",
+		mods = "LEADER",
+		action = wezterm.action.CloseCurrentPane({ confirm = true }),
 	},
 }
 
