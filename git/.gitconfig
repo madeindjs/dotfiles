@@ -14,7 +14,7 @@
 [log]
   showSignature = true
 [core]
-  editor = nvim
+	editor = nvim
 [pull]
   rebase = true
 [gc]
@@ -29,3 +29,5 @@
 [core]
   # Enable the file system monitor for better performance.
   fsmonitor = true
+[push]
+	autoSetupRemote = true
