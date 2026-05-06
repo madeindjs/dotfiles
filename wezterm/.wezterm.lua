@@ -22,40 +22,6 @@ config.inactive_pane_hsb = {
 config.hide_tab_bar_if_only_one_tab = true
 config.use_fancy_tab_bar = true
 
--- Custom tab title with active process indicator
-local shells = { "zsh", "bash", "fish", "sh", "dash", "ksh", "tcsh", "csh", "nvim", "uv run nvim" }
-local function is_shell(process_name)
-	if not process_name then
-		return true
-	end
-	local name = process_name:match("([^/]+)$") or process_name
-	for _, shell in ipairs(shells) do
-		if name == shell or name == "-" .. shell then
-			return true
-		end
-	end
-	return false
-end
-
-wezterm.on("format-tab-title", function(tab, tabs, panes, config, hover, max_width)
-	local pane = tab.active_pane
-	local title = tab.tab_title
-	if not title or #title == 0 then
-		title = pane.title
-	end
-
-	local process_name = pane.foreground_process_name
-	local name = process_name and (process_name:match("([^/]+)$") or process_name) or ""
-	local process_indicator = ""
-	if name == "mpv" then
-		process_indicator = "🎵"
-	elseif not is_shell(process_name) then
-		process_indicator = "⏳"
-	end
-
-	return process_indicator .. title
-end)
-
 -- misc
 config.check_for_updates = true
 -- config.exit_behavior = "CloseOnCleanExit"
@@ -78,6 +44,12 @@ config.keys = {
 		mods = "LEADER",
 		action = wezterm.action.SplitVertical({ domain = "CurrentPaneDomain" }),
 	},
+	-- Pass Shift+Enter to applications (for multi-line input in CLI tools like Factory Droid)
+	{
+		key = "Enter",
+		mods = "SHIFT",
+		action = act.SendKey({ key = "Enter", mods = "SHIFT" }),
+	},
 }
 
 -- add actions
@@ -96,21 +68,6 @@ wezterm.on("augment-command-palette", function(window, pane)
 					end
 				end),
 			}),
-		},
-		{
-			brief = "[WT] Start writer-framework@upstream",
-			icon = "cod_empty_window", -- https://wezfurlong.org/wezterm/config/lua/wezterm/nerdfonts.html
-			action = wezterm.action_callback(function(window, pane)
-				local cwd = os.getenv("HOME") .. "/github/writer/writer-framework@upstream"
-				local proc_tab, proc_tab_pane_1, proc_win = window:mux_window():spawn_tab({ cwd = cwd })
-				proc_tab:set_title("WF@up")
-				local proc_tab_pane_2 = proc_tab_pane_1:split({ direction = "Bottom", size = 0.25, cwd = cwd })
-				local proc_tab_pane_3 = proc_tab_pane_2:split({ direction = "Right", size = 0.5, cwd = cwd })
-				proc_tab_pane_1:send_text("poetry run nvim .\n")
-				proc_tab_pane_2:send_text("poetry run writer edit playground/text-demo --port 5000\n")
-				proc_tab_pane_3:send_text("npm run dev\n")
-				proc_tab:activate()
-			end),
 		},
 		{
 			brief = "[WT] Start fs.action-ai",
