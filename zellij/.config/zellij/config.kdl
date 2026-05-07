@@ -26,8 +26,8 @@ keybinds clear-defaults=true {
     }
     tab {
         bind "left" { GoToPreviousTab; }
-        bind "down" { GoToNextTab; }
-        bind "up" { GoToPreviousTab; }
+        // bind "down" { GoToNextTab; }
+        // bind "up" { GoToPreviousTab; }
         bind "right" { GoToNextTab; }
         bind "1" { GoToTab 1; SwitchToMode "normal"; }
         bind "2" { GoToTab 2; SwitchToMode "normal"; }
@@ -51,6 +51,11 @@ keybinds clear-defaults=true {
         bind "Ctrl t" { SwitchToMode "normal"; }
         bind "x" { CloseTab; SwitchToMode "normal"; }
         bind "tab" { ToggleTab; }
+        // custom
+        bind "Shift Left" { MoveTab "Left"; }
+        bind "Shift Right" { MoveTab "Right"; }
+        bind "down" { MoveTab "Left"; }
+        bind "up" { MoveTab "Right"; }
     }
     resize {
         bind "left" { Resize "Increase left"; }
