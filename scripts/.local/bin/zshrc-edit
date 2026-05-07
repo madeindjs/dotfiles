@@ -1,2 +1,11 @@
 #!/usr/bin/env zsh
-nvim ~/.zshrc && source ~/.zshrc
+# `source ~/.zshrc` in this file does not reload your interactive shell: this
+# script runs in a subprocess, so sourcing only affects that short-lived child.
+# After editing, replace this process with a new zsh so ~/.zshrc is loaded again.
+#
+# - Plain `zshrc-edit`: spawns a fresh nested shell (exit returns to the caller).
+# - `exec zshrc-edit`: replaces your current shell so there is no stale parent.
+
+nvim ~/.zshrc || exit $?
+
+exec zsh -l
