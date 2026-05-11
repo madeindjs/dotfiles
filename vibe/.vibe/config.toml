@@ -30,7 +30,10 @@ agent_paths = []
 enabled_agents = []
 disabled_agents = []
 installed_agents = []
-skill_paths = [".agents/.skills", '.cursor/skills']
+skill_paths = [
+    ".agents/.skills",
+    ".cursor/skills",
+]
 enabled_skills = []
 disabled_skills = []
 
@@ -134,7 +137,7 @@ denylist = []
 sensitive_patterns = []
 
 [tools.web_search]
-permission = "ask"
+permission = "always"
 allowlist = []
 denylist = []
 sensitive_patterns = []
@@ -142,7 +145,7 @@ timeout = 120
 model = "mistral-vibe-cli-with-tools"
 
 [tools.write_file]
-permission = "ask"
+permission = "always"
 allowlist = []
 denylist = []
 sensitive_patterns = [
@@ -163,8 +166,10 @@ sensitive_patterns = [
 max_read_bytes = 64000
 
 [tools.web_fetch]
-permission = "ask"
-allowlist = []
+permission = "always"
+allowlist = [
+    "github.com",
+]
 denylist = []
 sensitive_patterns = []
 default_timeout = 30
@@ -246,24 +251,26 @@ sensitive_patterns = []
 [tools.bash]
 permission = "ask"
 allowlist = [
+    "cat",
     "cd",
     "echo",
+    "file",
+    "find",
     "git diff",
     "git log",
     "git status",
-    "tree",
-    "whoami",
-    "cat",
-    "file",
-    "find",
+    "grep *",
     "head",
     "ls",
+    "mkdir *",
     "pwd",
     "stat",
     "tail",
+    "tree",
     "uname",
     "wc",
     "which",
+    "whoami",
 ]
 denylist = [
     "gdb",
