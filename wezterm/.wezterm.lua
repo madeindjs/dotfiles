@@ -51,6 +51,12 @@ config.keys = {
 		mods = "LEADER",
 		action = wezterm.action.CloseCurrentPane({ confirm = true }),
 	},
+	-- Close current pane immediately and kill its process (no confirmation)
+	{
+		key = "x",
+		mods = "CTRL|SHIFT",
+		action = wezterm.action.CloseCurrentPane({ confirm = false }),
+	},
 }
 
 -- add actions
