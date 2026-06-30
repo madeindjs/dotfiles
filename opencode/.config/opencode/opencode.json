@@ -1,9 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "openrouter/x-ai/grok-code-fast-1",
-  "small_model": "openrouter/qwen/qwen3-coder",
+  "model": "ollama-cloud/kimi-k2.7-code",
+  "small_model": "ollama-cloud/ministral-3:14b",
   "share": "disabled",
-  "theme": "system",
   "permission": {
     "bash": {
       "git push": "ask",
