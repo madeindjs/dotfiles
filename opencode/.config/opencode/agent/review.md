@@ -1,7 +1,7 @@
 ---
 description: Reviews code for quality and best practices
 mode: subagent
-model: openrouter/qwen/qwen3-coder
+model: ollama-cloud/kimi-k2.7-code
 temperature: 0.1
 tools:
   write: false
