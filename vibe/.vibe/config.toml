@@ -72,6 +72,7 @@ input_price = 1.5
 output_price = 7.5
 thinking = "high"
 auto_compact_threshold = 200000
+supports_images = true
 
 [[models]]
 name = "devstral-small-latest"
@@ -146,7 +147,9 @@ model = "mistral-vibe-cli-with-tools"
 
 [tools.write_file]
 permission = "always"
-allowlist = []
+allowlist = [
+    "/tmp/*",
+]
 denylist = []
 sensitive_patterns = [
     "**/.env",
@@ -154,16 +157,6 @@ sensitive_patterns = [
 ]
 max_write_bytes = 64000
 create_parent_dirs = true
-
-[tools.read_file]
-permission = "always"
-allowlist = []
-denylist = []
-sensitive_patterns = [
-    "**/.env",
-    "**/.env.*",
-]
-max_read_bytes = 64000
 
 [tools.web_fetch]
 permission = "always"
@@ -215,18 +208,6 @@ exclude_patterns = [
 ]
 codeignore_file = ".vibeignore"
 
-[tools.search_replace]
-permission = "ask"
-allowlist = []
-denylist = []
-sensitive_patterns = [
-    "**/.env",
-    "**/.env.*",
-]
-max_content_size = 100000
-create_backup = false
-fuzzy_threshold = 0.9
-
 [tools.todo]
 permission = "always"
 allowlist = []
@@ -251,22 +232,53 @@ sensitive_patterns = []
 [tools.bash]
 permission = "ask"
 allowlist = [
+    "-H",
+    "./target/debug/cli-chat",
+    "./target/release/cli-chat",
+    "bundle",
+    "cargo build",
+    "cargo check",
     "cat",
     "cd",
+    "chmod",
+    "curl",
+    "cut",
+    "date",
     "echo",
     "file",
     "find",
+    "find . -name \"*.rb\" -type f -exec grep -l \"require_user\" {} \\;",
     "git diff",
     "git log",
+    "git ls-files",
+    "git ls-tree",
+    "git show",
     "git status",
-    "grep *",
+    "grep",
     "head",
+    "kill",
     "ls",
-    "mkdir *",
+    "lsof",
+    "mkdir",
+    "mv",
+    "npm install",
+    "npm run build",
+    "npm run draw",
+    "npm test",
+    "printf",
     "pwd",
+    "rm",
+    "sed",
+    "sleep",
+    "sort",
+    "sqlite3",
     "stat",
+    "svg-compact",
     "tail",
+    "timeout",
+    "touch",
     "tree",
+    "true",
     "uname",
     "wc",
     "which",
@@ -312,3 +324,27 @@ permission = "always"
 allowlist = []
 denylist = []
 sensitive_patterns = []
+
+[tools.read]
+permission = "always"
+allowlist = [
+    "/home/alexandre/.rvm/gems/ruby-3.2.7/gems/doorkeeper-5.9.0/app/controllers/doorkeeper/*",
+    "/home/alexandre/.rvm/gems/ruby-3.2.7/gems/doorkeeper-5.9.0/lib/doorkeeper/*",
+    "/home/alexandre/.vibe/plans/*",
+]
+denylist = []
+sensitive_patterns = [
+    "**/.env",
+    "**/.env.*",
+]
+max_read_bytes = 64000
+
+[tools.edit]
+permission = "always"
+allowlist = []
+denylist = []
+sensitive_patterns = [
+    "**/.env",
+    "**/.env.*",
+]
+fuzzy_threshold = 0.9
