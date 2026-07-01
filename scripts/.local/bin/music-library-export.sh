@@ -32,6 +32,11 @@ function convert_file() {
   filename="$(basename "$1")"
   new_file="$path/${filename%.*}.mp3"
 
+  if [ -f "$new_file" ]; then
+    echo "skipping already converted file: $new_file" >&2
+    return
+  fi
+
   # -q:a 2: high-quality LAME VBR encoding (~190 kbps average, transparent for most listening)
   echo "ffmpeg -i '$1' -q:a 2 '$new_file'" >>"$JOBS_FILE"
 }
@@ -39,6 +44,11 @@ function convert_file() {
 function copy_file() {
   path=$(get_out_directory "$1")
   new_file="$path/$(basename "$1")"
+
+  if [ -f "$new_file" ]; then
+    echo "skipping already copied file: $new_file" >&2
+    return
+  fi
 
   echo "cp '$1' '$new_file'" >>"$JOBS_FILE"
 }
