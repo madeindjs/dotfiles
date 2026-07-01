@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# take args
-EXPORT_DIR="$1"
-FORMAT="${2:-mp3}"
+help() {
+  echo "Usage: $(basename "$0") <export-directory>" >&2
+}
+
+EXPORT_DIR="${1:-}"
 JOBS_FILE=$(mktemp "music-library-export.XXXXX")
+trap 'rm -f "$JOBS_FILE"' EXIT
 
 echo "tasks created in $JOBS_FILE"
 
 if [ -z "$EXPORT_DIR" ]; then
   help
-  echo "You must provide the export directory" 1>&2
+  echo "You must provide the export directory" >&2
   exit 1
 fi
 
@@ -27,9 +30,10 @@ function get_out_directory() {
 function convert_file() {
   path=$(get_out_directory "$1")
   filename="$(basename "$1")"
-  new_file="$path/${filename%.*}.$2"
+  new_file="$path/${filename%.*}.mp3"
 
-  echo "ffmpeg -i '$1' '$new_file'" >>"$JOBS_FILE"
+  # -q:a 2: high-quality LAME VBR encoding (~190 kbps average, transparent for most listening)
+  echo "ffmpeg -i '$1' -q:a 2 '$new_file'" >>"$JOBS_FILE"
 }
 
 function copy_file() {
@@ -40,11 +44,17 @@ function copy_file() {
 }
 
 find . -type f -print0 | while read -r -d $'\0' FILE; do
-  if [[ $FILE == *.wav ]] || [[ $FILE == *.flac ]] || [[ $FILE == *.alac ]]; then
-    convert_file "$FILE" "$FORMAT"
-  else
-    copy_file "$FILE"
-  fi
+  case "${FILE,,}" in
+    *.wav|*.flac|*.alac|*.aiff|*.aac|*.m4a|*.ogg|*.opus|*.wma|*.mp4|*.webm)
+      convert_file "$FILE"
+      ;;
+    *.mp3)
+      copy_file "$FILE"
+      ;;
+    *)
+      echo "skipping non-audio file: $FILE" >&2
+      ;;
+  esac
 done
 
 parallel --bar <"$JOBS_FILE"
