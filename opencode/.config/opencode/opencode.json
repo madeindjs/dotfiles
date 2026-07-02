@@ -1,7 +1,7 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "ollama-cloud/kimi-k2.7-code",
-  "small_model": "ollama-cloud/ministral-3:14b",
+  "model": "ollama-cloud/glm-5.2",
+  "small_model": "ollama-cloud/deepseek-v4-flash",
   "share": "disabled",
   "permission": {
     "bash": {

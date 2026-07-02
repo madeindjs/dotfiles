@@ -1,7 +1,7 @@
 ---
 description: Stages changes, writes a Conventional Commits message, and commits.
 mode: subagent
-model: ollama-cloud/ministral-3:14b
+model: ollama-cloud/deepseek-v4-flash
 temperature: 0.2
 permission:
   bash:
