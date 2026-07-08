@@ -21,6 +21,7 @@ const path = require("path");
 const HOST = process.env.OLLAMA_HOST || "https://ollama.com";
 const API_KEY = process.env.OLLAMA_API_KEY;
 const MODEL = process.env.OLLAMA_MODEL || "ministral-3:14b";
+const CONCURRENCY = parseInt(process.env.OLLAMA_CONCURRENCY || "4", 10);
 
 const MUSIC_EXTENSIONS = [".flac", ".mp3", ".m4a", ".aac", ".ogg", ".wav", ".wma", ".opus"];
 
@@ -162,7 +163,7 @@ async function* walk(dir) {
   }
 }
 
-async function processDirectory(dir) {
+async function* collectTranslateTasks(dir) {
   for await (const { dir: fileDir, filename, fullPath: basePath } of walk(dir)) {
     if (!filename.endsWith(".lrc")) continue;
     // Skip already-French LRC files
@@ -220,17 +221,51 @@ async function processDirectory(dir) {
       continue;
     }
 
-    // Translate
-    console.log(`[TRANSLATE] ${relativePath} -> ${baseName}.fr.lrc`);
-    try {
-      const translated = await translateLrc(originalText);
-      await fs.promises.writeFile(frenchPath, translated, "utf-8");
-      console.log(`            wrote ${path.relative(dir, frenchPath)}`);
-      await sleep(500); // small rate-limit pause between tracks
-    } catch (err) {
-      console.error(`            failed: ${err.message}`);
+    yield { fileDir, baseName, frenchPath, relativePath, originalText };
+  }
+}
+
+async function runWithConcurrency(tasks, concurrency) {
+  const pending = [...tasks];
+  const running = new Set();
+
+  while (pending.length > 0 || running.size > 0) {
+    while (running.size < concurrency && pending.length > 0) {
+      const task = pending.shift();
+      const promise = task()
+        .catch((err) => console.error(`[ERROR] unexpected task failure: ${err.message}`))
+        .finally(() => running.delete(promise));
+      running.add(promise);
+    }
+
+    if (running.size > 0) {
+      await Promise.race(running);
     }
   }
+}
+
+async function processDirectory(dir) {
+  const tasks = [];
+  for await (const task of collectTranslateTasks(dir)) {
+    tasks.push(task);
+  }
+
+  const translateJobs = tasks.map(
+    ({ fileDir, baseName, frenchPath, relativePath, originalText }) =>
+      async () => {
+        const targetRelative = path.relative(dir, frenchPath);
+        console.log(`[TRANSLATE] ${relativePath} -> ${baseName}.fr.lrc`);
+        try {
+          const translated = await translateLrc(originalText);
+          await fs.promises.writeFile(frenchPath, translated, "utf-8");
+          console.log(`            wrote ${targetRelative}`);
+        } catch (err) {
+          console.error(`            failed: ${err.message}`);
+        }
+      }
+  );
+
+  await runWithConcurrency(translateJobs, CONCURRENCY);
 }
 
 (async () => {
