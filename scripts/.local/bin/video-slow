@@ -5,6 +5,9 @@ if [ $# -lt 1 ]; then
     echo "Usage: $0 <video> [speed]"
     echo "  speed: ralenti, ex: 0.25 (défaut), 0.5, 0.75..."
     echo "  Sortie: input.x0.25.mp4"
+    echo "  L'audio est ralenti façon bande magnétique (le pitch descend"
+    echo "  avec la vitesse, sans time-stretching). Correspond à MPV avec"
+    echo "  audio-pitch-correction=no."
     exit 1
 fi
 
@@ -16,35 +19,26 @@ if [ ! -f "$INPUT" ]; then
     exit 1
 fi
 
-FACTOR=$(awk "BEGIN { printf \"%.6f\", 1/$SPEED }")
-
 BASE="${INPUT%.*}"
 EXT="${INPUT##*.}"
 OUTPUT="${BASE}.x${SPEED}.${EXT}"
-TMPDIR=$(mktemp -d)
-AUDIO_WAV="$TMPDIR/audio.wav"
-AUDIO_SLOW="$TMPDIR/audio_slow.wav"
 
-trap "rm -rf $TMPDIR" EXIT
+# Fréquence de travail; l'audio source est resamplé à cette valeur.
+RATE=44100
+# asetrate change la fréquence déclarée sans toucher aux échantillons,
+# aresample reconvertit à RATE: la durée est multipliée par 1/SPEED et
+# le pitch descend d'autant (effet bande magnétique).
+ASET=$(awk "BEGIN { printf \"%d\", $RATE * $SPEED }")
+FACTOR=$(awk "BEGIN { printf \"%.6f\", 1/$SPEED }")
 
 echo "Input:  $INPUT"
 echo "Output: $OUTPUT"
 echo "Speed:  x${SPEED}"
 
-# 1. Extraire l'audio en WAV
-echo "→ Extraction audio..."
-ffmpeg -i "$INPUT" -vn -acodec pcm_s16le -ar 44100 -ac 2 "$AUDIO_WAV" -y -loglevel warning
-
-# 2. Ralentir l'audio avec rubberband (même algo que MPV)
-echo "→ Ralenti audio (rubberband)..."
-rubberband --time "$FACTOR" --pitch 0 --formant "$AUDIO_WAV" "$AUDIO_SLOW"
-
-# 3. Combiner vidéo ralentie + audio rubberband
 echo "→ Assemblage final..."
 ffmpeg -i "$INPUT" \
-    -i "$AUDIO_SLOW" \
     -filter:v "setpts=${FACTOR}*PTS" \
-    -map 0:v -map 1:a \
+    -filter:a "aresample=${RATE},asetrate=${ASET},aresample=${RATE}" \
     -c:v libx264 -crf 18 -preset medium \
     -c:a aac -b:a 192k \
     -shortest \
