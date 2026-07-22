@@ -1,0 +1,53 @@
+#!/bin/bash
+set -euo pipefail
+
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <video> [speed]"
+    echo "  speed: ralenti, ex: 0.25 (défaut), 0.5, 0.75..."
+    echo "  Sortie: input.x0.25.mp4"
+    exit 1
+fi
+
+INPUT="$1"
+SPEED="${2:-0.25}"
+
+if [ ! -f "$INPUT" ]; then
+    echo "Fichier introuvable: $INPUT"
+    exit 1
+fi
+
+FACTOR=$(awk "BEGIN { printf \"%.6f\", 1/$SPEED }")
+
+BASE="${INPUT%.*}"
+EXT="${INPUT##*.}"
+OUTPUT="${BASE}.x${SPEED}.${EXT}"
+TMPDIR=$(mktemp -d)
+AUDIO_WAV="$TMPDIR/audio.wav"
+AUDIO_SLOW="$TMPDIR/audio_slow.wav"
+
+trap "rm -rf $TMPDIR" EXIT
+
+echo "Input:  $INPUT"
+echo "Output: $OUTPUT"
+echo "Speed:  x${SPEED}"
+
+# 1. Extraire l'audio en WAV
+echo "→ Extraction audio..."
+ffmpeg -i "$INPUT" -vn -acodec pcm_s16le -ar 44100 -ac 2 "$AUDIO_WAV" -y -loglevel warning
+
+# 2. Ralentir l'audio avec rubberband (même algo que MPV)
+echo "→ Ralenti audio (rubberband)..."
+rubberband --time "$FACTOR" --pitch 0 --formant "$AUDIO_WAV" "$AUDIO_SLOW"
+
+# 3. Combiner vidéo ralentie + audio rubberband
+echo "→ Assemblage final..."
+ffmpeg -i "$INPUT" \
+    -i "$AUDIO_SLOW" \
+    -filter:v "setpts=${FACTOR}*PTS" \
+    -map 0:v -map 1:a \
+    -c:v libx264 -crf 18 -preset medium \
+    -c:a aac -b:a 192k \
+    -shortest \
+    -y "$OUTPUT" -loglevel warning
+
+echo "✓ $OUTPUT"
