@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Setup folder icons for a book library.
+#
+# Each series is a directory containing one file per book (PDF or CBZ).
+# The script extracts the first page/cover of the first book (sorted
+# naturally) and saves it as `cover.<ext>` (resized to max 500px) inside
+# the series directory, then sets it as the Gnome folder icon via `gio`.
+#
+# Usage:
+#   book-cover-icons [-f] [directory]
+#
+# Options:
+#   -f, --force   regenerate covers even if one already exists
+#
+# Default directory is the current working directory.
+#
+# Requirements: unzip, pdftoppm (poppler-utils), convert (ImageMagick),
+# gio (gvfs).
+
+COVER_MAX_SIZE=500
+
+help() {
+  echo "Usage: $(basename "$0") [-f] [directory]" >&2
+  echo "  Sets folder icons for each series directory under <directory>." >&2
+  echo "  -f, --force   regenerate covers even if one already exists" >&2
+  echo "  Defaults to the current directory." >&2
+}
+
+function has() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+function check_deps() {
+  local missing=()
+  for dep in unzip pdftoppm convert gio; do
+    if ! has "$dep"; then
+      missing+=("$dep")
+    fi
+  done
+  if [ ${#missing[@]} -gt 0 ]; then
+    echo "Missing dependencies: ${missing[*]}" >&2
+    exit 1
+  fi
+}
+
+check_deps
+
+FORCE=0
+ROOT="."
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help) help; exit 0 ;;
+    -f|--force) FORCE=1; shift ;;
+    --) shift; break ;;
+    -*) echo "Unknown option: $1" >&2; help; exit 1 ;;
+    *) ROOT="$1"; shift ;;
+  esac
+done
+
+if [ ! -d "$ROOT" ]; then
+  echo "Not a directory: $ROOT" >&2
+  exit 1
+fi
+
+# Escape unzip glob metacharacters ([ ] * ?) so member names with
+# brackets (e.g. "Series v01 (2009) [Group]/0000.jpg") match literally.
+function escape_zip_pattern() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\[/\\[}"
+  s="${s//\]/\\]}"
+  s="${s//\*/\\*}"
+  s="${s//\?/\\?}"
+  echo "$s"
+}
+
+# Resize an image so its largest dimension is at most COVER_MAX_SIZE,
+# in place. Skips resize if already smaller. Keeps format/aspect ratio.
+function resize_cover() {
+  local cover="$1"
+  convert "$cover" -resize "${COVER_MAX_SIZE}x${COVER_MAX_SIZE}>" "$cover"
+}
+
+# Extract the first image from a CBZ file to <out_dir>/cover.<ext>
+function extract_cbz_cover() {
+  local cbz="$1"
+  local out_dir="$2"
+  local first_img
+  first_img="$(unzip -Z1 "$cbz" | grep -iE '\.(jpg|jpeg|png|webp)$' | sort -V | head -1 || true)"
+  if [ -z "$first_img" ]; then
+    echo "  no image found in $cbz" >&2
+    return 1
+  fi
+  local ext="${first_img##*.}"
+  ext="${ext,,}"
+  [ "$ext" = "jpeg" ] && ext="jpg"
+  local cover="$out_dir/cover.$ext"
+  local pattern
+  pattern="$(escape_zip_pattern "$first_img")"
+  unzip -p -- "$cbz" "$pattern" >"$cover" 2>/dev/null
+  [ -s "$cover" ] || { echo "  failed to extract cover from $cbz" >&2; rm -f "$cover"; return 1; }
+  echo "$cover"
+}
+
+# Render the first page of a PDF file to <out_dir>/cover.jpg
+function extract_pdf_cover() {
+  local pdf="$1"
+  local out_dir="$2"
+  local prefix="$out_dir/.cover"
+  pdftoppm -f 1 -l 1 -jpeg -r 150 "$pdf" "$prefix" >/dev/null 2>&1
+  local rendered
+  rendered="$(ls "$prefix"-*.jpg 2>/dev/null | head -1 || true)"
+  if [ -z "$rendered" ] || [ ! -f "$rendered" ]; then
+    echo "  failed to render first page of $pdf" >&2
+    return 1
+  fi
+  mv "$rendered" "$out_dir/cover.jpg"
+  echo "$out_dir/cover.jpg"
+}
+
+# Find the first book file in a series directory (natural sort, case-insensitive)
+function first_book() {
+  local dir="$1"
+  local first=""
+  first="$(find "$dir" -maxdepth 1 -type f \( -iname '*.pdf' -o -iname '*.cbz' \) -printf '%f\n' \
+    | sort -V \
+    | head -1 || true)"
+  [ -z "$first" ] && return 1
+  echo "$dir/$first"
+}
+
+function set_folder_icon() {
+  local dir="$1"
+  local cover="$2"
+  local uri="file://$(realpath -- "$cover")"
+  gio set -t string "$dir" "metadata::custom-icon" "$uri"
+}
+
+shopt -s nullglob
+find "$ROOT" -mindepth 1 -maxdepth 1 -type d -print0 | while read -r -d $'\0' dir; do
+  series_name="$(basename "$dir")"
+  echo "==> $series_name"
+  if [ "$FORCE" -eq 0 ] && compgen -G "$dir/cover.*" >/dev/null; then
+    echo "  cover already exists, skipping"
+    continue
+  fi
+  if [ "$FORCE" -eq 1 ]; then
+    rm -f "$dir"/cover.*
+  fi
+  book="$(first_book "$dir" || true)"
+  if [ -z "$book" ]; then
+    echo "  no book found, skipping" >&2
+    continue
+  fi
+  ext="${book##*.}"
+  ext="${ext,,}"
+  case "$ext" in
+    cbz) cover="$(extract_cbz_cover "$book" "$dir" || true)" ;;
+    pdf) cover="$(extract_pdf_cover "$book" "$dir" || true)" ;;
+    *)   echo "  unsupported format: $ext" >&2; continue ;;
+  esac
+  if [ -z "$cover" ] || [ ! -f "$cover" ]; then
+    echo "  no cover extracted, skipping" >&2
+    continue
+  fi
+  resize_cover "$cover"
+  set_folder_icon "$dir" "$cover"
+  echo "  set icon: $cover"
+done
