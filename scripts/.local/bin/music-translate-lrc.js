@@ -20,50 +20,290 @@ const path = require("path");
 
 const HOST = process.env.OLLAMA_HOST || "https://ollama.com";
 const API_KEY = process.env.OLLAMA_API_KEY;
-const MODEL = process.env.OLLAMA_MODEL || "ministral-3:14b";
+const MODEL = process.env.OLLAMA_MODEL || "gemma4:cloud";
 const CONCURRENCY = parseInt(process.env.OLLAMA_CONCURRENCY || "4", 10);
 
-const MUSIC_EXTENSIONS = [".flac", ".mp3", ".m4a", ".aac", ".ogg", ".wav", ".wma", ".opus"];
+const MUSIC_EXTENSIONS = [
+  ".flac",
+  ".mp3",
+  ".m4a",
+  ".aac",
+  ".ogg",
+  ".wav",
+  ".wma",
+  ".opus",
+];
 
 // French words that strongly indicate the lyrics are already in French.
 // Includes common articles, pronouns, prepositions, conjunctions, auxiliaries,
 // and high-frequency adverbs/content words. Words are stored without accents so
 // the detector works on both ASCII and accented input.
 const FRENCH_INDICATORS = new Set([
-  "ai", "ailleurs", "ainsi", "alors", "apres", "aucun", "aucune", "aussi",
-  "autant", "autour", "autre", "autres", "aux", "avant", "avec", "beaucoup",
-  "bien", "bon", "bonne", "car", "ce", "cela", "ces", "cet", "cette",
-  "ceux", "chaque", "chez", "comme", "contre", "dans", "de", "deja",
-  "depuis", "des", "donc", "du", "elle", "elles", "en", "encore", "enfin",
-  "entre", "es", "est", "et", "ete", "eux", "faire", "fait", "faut", "fois",
-  "grace", "heure", "homme", "ici", "il", "ils", "jamais", "je", "jour",
-  "juste", "la", "laquelle", "le", "lequel", "les", "leur", "leurs", "lui",
-  "ma", "main", "maintenant", "mais", "mal", "maniere", "me", "meme", "mes",
-  "mien", "mienne", "miennes", "miens", "moins", "mon", "mot", "moi",
-  "mort", "ne", "noir", "nom", "non", "nos", "notre", "nous", "nouveau",
-  "nouvelle", "nuit", "on", "ont", "ou", "par", "parce", "pas", "peu",
-  "peut", "peux", "plus", "plutot", "pour", "pourquoi", "premier", "pres",
-  "presque", "puis", "quand", "que", "quel", "quelle", "quelles", "quels",
-  "qui", "quoi", "rien", "sa", "sans", "se", "ses", "si", "sien", "soi",
-  "soit", "son", "sont", "sous", "souvent", "suis", "sur", "ta", "tandis",
-  "tant", "te", "tel", "telle", "telles", "tels", "temps", "tes", "toi",
-  "ton", "toujours", "tous", "tout", "toute", "toutes", "tres", "trois",
-  "tu", "un", "une", "va", "vai", "vais", "vas", "vers", "vie", "voici",
-  "voila", "voir", "vont", "vos", "votre", "vous", "vu", "yeux",
+  "ai",
+  "ailleurs",
+  "ainsi",
+  "alors",
+  "apres",
+  "aucun",
+  "aucune",
+  "aussi",
+  "autant",
+  "autour",
+  "autre",
+  "autres",
+  "aux",
+  "avant",
+  "avec",
+  "beaucoup",
+  "bien",
+  "bon",
+  "bonne",
+  "car",
+  "ce",
+  "cela",
+  "ces",
+  "cet",
+  "cette",
+  "ceux",
+  "chaque",
+  "chez",
+  "comme",
+  "contre",
+  "dans",
+  "de",
+  "deja",
+  "depuis",
+  "des",
+  "donc",
+  "du",
+  "elle",
+  "elles",
+  "en",
+  "encore",
+  "enfin",
+  "entre",
+  "es",
+  "est",
+  "et",
+  "ete",
+  "eux",
+  "faire",
+  "fait",
+  "faut",
+  "fois",
+  "grace",
+  "heure",
+  "homme",
+  "ici",
+  "il",
+  "ils",
+  "jamais",
+  "je",
+  "jour",
+  "juste",
+  "la",
+  "laquelle",
+  "le",
+  "lequel",
+  "les",
+  "leur",
+  "leurs",
+  "lui",
+  "ma",
+  "main",
+  "maintenant",
+  "mais",
+  "mal",
+  "maniere",
+  "me",
+  "meme",
+  "mes",
+  "mien",
+  "mienne",
+  "miennes",
+  "miens",
+  "moins",
+  "mon",
+  "mot",
+  "moi",
+  "mort",
+  "ne",
+  "noir",
+  "nom",
+  "non",
+  "nos",
+  "notre",
+  "nous",
+  "nouveau",
+  "nouvelle",
+  "nuit",
+  "on",
+  "ont",
+  "ou",
+  "par",
+  "parce",
+  "pas",
+  "peu",
+  "peut",
+  "peux",
+  "plus",
+  "plutot",
+  "pour",
+  "pourquoi",
+  "premier",
+  "pres",
+  "presque",
+  "puis",
+  "quand",
+  "que",
+  "quel",
+  "quelle",
+  "quelles",
+  "quels",
+  "qui",
+  "quoi",
+  "rien",
+  "sa",
+  "sans",
+  "se",
+  "ses",
+  "si",
+  "sien",
+  "soi",
+  "soit",
+  "son",
+  "sont",
+  "sous",
+  "souvent",
+  "suis",
+  "sur",
+  "ta",
+  "tandis",
+  "tant",
+  "te",
+  "tel",
+  "telle",
+  "telles",
+  "tels",
+  "temps",
+  "tes",
+  "toi",
+  "ton",
+  "toujours",
+  "tous",
+  "tout",
+  "toute",
+  "toutes",
+  "tres",
+  "trois",
+  "tu",
+  "un",
+  "une",
+  "va",
+  "vai",
+  "vais",
+  "vas",
+  "vers",
+  "vie",
+  "voici",
+  "voila",
+  "voir",
+  "vont",
+  "vos",
+  "votre",
+  "vous",
+  "vu",
+  "yeux",
 ]);
 
 // English function words used to avoid false positives on English lyrics that
 // happen to contain a couple of French-sounding words.
 const ENGLISH_INDICATORS = new Set([
-  "a", "an", "and", "are", "as", "at", "be", "been", "being", "but", "by",
-  "can", "could", "did", "do", "does", "doing", "done", "for", "from",
-  "had", "has", "have", "he", "her", "here", "him", "his", "how", "i", "if",
-  "in", "is", "it", "its", "may", "might", "must", "my", "no", "not", "of",
-  "on", "one", "or", "our", "out", "shall", "she", "should", "so", "some",
-  "such", "than", "that", "the", "their", "them", "then", "there", "these",
-  "they", "this", "those", "to", "too", "up", "us", "was", "we", "were",
-  "what", "when", "where", "which", "while", "who", "whom", "whose", "why",
-  "will", "with", "would", "you", "your",
+  "a",
+  "an",
+  "and",
+  "are",
+  "as",
+  "at",
+  "be",
+  "been",
+  "being",
+  "but",
+  "by",
+  "can",
+  "could",
+  "did",
+  "do",
+  "does",
+  "doing",
+  "done",
+  "for",
+  "from",
+  "had",
+  "has",
+  "have",
+  "he",
+  "her",
+  "here",
+  "him",
+  "his",
+  "how",
+  "i",
+  "if",
+  "in",
+  "is",
+  "it",
+  "its",
+  "may",
+  "might",
+  "must",
+  "my",
+  "no",
+  "not",
+  "of",
+  "on",
+  "one",
+  "or",
+  "our",
+  "out",
+  "shall",
+  "she",
+  "should",
+  "so",
+  "some",
+  "such",
+  "than",
+  "that",
+  "the",
+  "their",
+  "them",
+  "then",
+  "there",
+  "these",
+  "they",
+  "this",
+  "those",
+  "to",
+  "too",
+  "up",
+  "us",
+  "was",
+  "we",
+  "were",
+  "what",
+  "when",
+  "where",
+  "which",
+  "while",
+  "who",
+  "whom",
+  "whose",
+  "why",
+  "will",
+  "with",
+  "would",
+  "you",
+  "your",
 ]);
 
 function extractWords(text) {
@@ -138,7 +378,7 @@ async function translateLrc(text) {
   if (!response.ok) {
     const body = await response.text();
     throw new Error(
-      `Ollama API error: ${response.status} ${response.statusText}\n${body}`
+      `Ollama API error: ${response.status} ${response.statusText}\n${body}`,
     );
   }
 
@@ -164,7 +404,9 @@ async function* walk(dir) {
 }
 
 async function* collectTranslateTasks(dir) {
-  for await (const { dir: fileDir, filename, fullPath: basePath } of walk(dir)) {
+  for await (const { dir: fileDir, filename, fullPath: basePath } of walk(
+    dir,
+  )) {
     if (!filename.endsWith(".lrc")) continue;
     // Skip already-French LRC files
     if (filename.endsWith(".fr.lrc")) continue;
@@ -187,7 +429,9 @@ async function* collectTranslateTasks(dir) {
     try {
       originalText = await fs.promises.readFile(basePath, "utf-8");
     } catch (err) {
-      console.error(`[ERROR] ${relativePath}: failed to read file: ${err.message}`);
+      console.error(
+        `[ERROR] ${relativePath}: failed to read file: ${err.message}`,
+      );
       continue;
     }
 
@@ -216,7 +460,9 @@ async function* collectTranslateTasks(dir) {
         await fs.promises.unlink(basePath);
         console.log(`         removed ${relativePath}`);
       } catch (err) {
-        console.error(`         failed to remove ${relativePath}: ${err.message}`);
+        console.error(
+          `         failed to remove ${relativePath}: ${err.message}`,
+        );
       }
       continue;
     }
@@ -233,7 +479,9 @@ async function runWithConcurrency(tasks, concurrency) {
     while (running.size < concurrency && pending.length > 0) {
       const task = pending.shift();
       const promise = task()
-        .catch((err) => console.error(`[ERROR] unexpected task failure: ${err.message}`))
+        .catch((err) =>
+          console.error(`[ERROR] unexpected task failure: ${err.message}`),
+        )
         .finally(() => running.delete(promise));
       running.add(promise);
     }
@@ -262,7 +510,7 @@ async function processDirectory(dir) {
         } catch (err) {
           console.error(`            failed: ${err.message}`);
         }
-      }
+      },
   );
 
   await runWithConcurrency(translateJobs, CONCURRENCY);
