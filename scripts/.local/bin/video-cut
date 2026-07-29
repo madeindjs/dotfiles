@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Cut a video using ffmpeg using a start-end range.
+# Usage: video-cut <video> <start>-<end>
+#   <start>, <end>: HH:MM:SS or HH:MM:SS.mmm or SS[.mmm]
+#   Sortie: input.cut.mp4
+#   L'original est déplacé dans la corbeille (gio trash).
+
+set -euo pipefail
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <video> <start>-<end>"
+    echo "  ex: $0 input.mp4 00:00:00-00:30.050"
+    exit 1
+fi
+
+INPUT="$1"
+RANGE="$2"
+
+if [ ! -f "$INPUT" ]; then
+    echo "Fichier introuvable: $INPUT"
+    exit 1
+fi
+
+if [[ "$RANGE" != *-* ]]; then
+    echo "Plage invalide: $RANGE (attendu: <start>-<end>)"
+    exit 1
+fi
+
+START="${RANGE%%-*}"
+END="${RANGE#*-}"
+
+BASE="${INPUT%.*}"
+EXT="${INPUT##*.}"
+OUTPUT="${BASE}.cut.${EXT}"
+
+echo "Input:  $INPUT"
+echo "Output: $OUTPUT"
+echo "Range:  ${START} → ${END}"
+
+echo "→ Découpage..."
+ffmpeg -ss "$START" -to "$END" -i "$INPUT" \
+    -c:v libx264 -crf 18 -preset medium \
+    -c:a aac -b:a 192k \
+    -y "$OUTPUT" -loglevel warning
+
+echo "→ Déplacement de l'original dans la corbeille..."
+gio trash "$INPUT"
+
+echo "✓ $OUTPUT"
