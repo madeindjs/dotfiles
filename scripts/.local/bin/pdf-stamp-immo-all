@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# Script: batch-pdf-stamp-immo
+# Description: Recursively stamps all PDFs in a source directory
+#              using pdf-stamp-immo, recreating the same directory structure
+#              under a target base directory.
+# Usage: batch-pdf-stamp-immo <source_dir> [target_base_dir]
+
+# Default target base directory
+DEFAULT_TARGET_BASE="/tmp/courtier/alexandre"
+
+# Name of the stamp script (change if needed)
+STAMP_SCRIPT="pdf-stamp-immo"
+
+# Check arguments
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <source_dir> [target_base_dir]" >&2
+  exit 1
+fi
+
+SOURCE_DIR="$1"
+TARGET_BASE="${2:-$DEFAULT_TARGET_BASE}"
+
+# Validate source directory
+if [ ! -d "$SOURCE_DIR" ]; then
+  echo "Error: Source directory '$SOURCE_DIR' does not exist or is not a directory." >&2
+  exit 1
+fi
+
+# Ensure target base directory exists
+mkdir -p "$TARGET_BASE" || {
+  echo "Error: Could not create target base directory '$TARGET_BASE'." >&2
+  exit 1
+}
+
+# Locate the stamp script: first check same directory, then PATH
+STAMP_CMD=""
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [ -f "$SCRIPT_DIR/$STAMP_SCRIPT" ]; then
+  STAMP_CMD="$SCRIPT_DIR/$STAMP_SCRIPT"
+elif command -v "$STAMP_SCRIPT" &>/dev/null; then
+  STAMP_CMD="$STAMP_SCRIPT"
+else
+  echo "Error: Stamp script '$STAMP_SCRIPT' not found in same directory or in PATH." >&2
+  exit 1
+fi
+
+# Find all PDF files recursively, store in an array
+echo "Searching for PDF files in '$SOURCE_DIR'..."
+mapfile -t pdf_files < <(find "$SOURCE_DIR" -type f -iname '*.pdf' -print0 2>/dev/null | xargs -0 -I {} echo {})
+
+total=${#pdf_files[@]}
+echo "Found $total PDF file(s)."
+
+if [ "$total" -eq 0 ]; then
+  echo "No PDF files found. Exiting."
+  exit 0
+fi
+
+# Counter for processed files
+count=0
+errors=0
+
+# Process each file
+for pdf_file in "${pdf_files[@]}"; do
+  # Compute relative path from source directory
+  rel_path="${pdf_file#$SOURCE_DIR/}"
+  # Remove any leading slash (in case SOURCE_DIR ends with /)
+  rel_path="${rel_path#/}"
+
+  # Construct target file path
+  target_file="$TARGET_BASE/$rel_path"
+  target_dir=$(dirname "$target_file")
+
+  # Create target subdirectory if it doesn't exist
+  mkdir -p "$target_dir" || {
+    echo "Error: Could not create target directory '$target_dir'." >&2
+    ((errors++))
+    continue
+  }
+
+  echo "Processing: $pdf_file"
+  echo "  -> $target_file"
+
+  # Call the stamp script
+  if "$STAMP_CMD" "$pdf_file" "$target_dir"; then
+    ((count++))
+  else
+    echo "  ERROR: Failed to stamp '$pdf_file'." >&2
+    ((errors++))
+  fi
+done
+
+echo "----------------------------------------"
+echo "Batch processing complete."
+echo "Successfully stamped: $count file(s)."
+if [ "$errors" -gt 0 ]; then
+  echo "Errors encountered: $errors file(s)." >&2
+fi

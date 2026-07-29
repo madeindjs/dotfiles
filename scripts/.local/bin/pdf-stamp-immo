@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# Script: pdfcpu-stamp-immo
+# Description: Stamps a PDF file with "POUR RECHERCHE DE CRÉDIT IMMOBILIER"
+#              and outputs to a specified directory (default /tmp/courtier/alexandre)
+#              preserving the original filename. Handles filenames containing '#'.
+# Usage: pdfcpu-stamp-immo <source_pdf> [target_directory]
+
+set -euo pipefail
+
+# Default target directory
+DEFAULT_TARGET="/tmp/courtier/alexandre"
+
+# Check arguments
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 <source_pdf> [target_directory]" >&2
+  exit 1
+fi
+
+SOURCE_FILE="$1"
+TARGET_DIR="${2:-$DEFAULT_TARGET}"
+
+# Validate source file
+if [ ! -f "$SOURCE_FILE" ]; then
+  echo "Error: Source file '$SOURCE_FILE' does not exist or is not a regular file." >&2
+  exit 1
+fi
+
+# Ensure target directory exists
+mkdir -p "$TARGET_DIR" || {
+  echo "Error: Could not create target directory '$TARGET_DIR'." >&2
+  exit 1
+}
+
+# Extract filename (basename)
+BASENAME=$(basename "$SOURCE_FILE")
+TARGET_FILE="$TARGET_DIR/$BASENAME"
+
+# Check if pdfcpu is available
+if ! command -v pdfcpu &>/dev/null; then
+  echo "Error: pdfcpu is not installed or not in PATH." >&2
+  exit 1
+fi
+
+# Create a temporary copy of the source file with '#' replaced by '_' to avoid pdfcpu page range interpretation
+SAFE_BASENAME="${BASENAME//#/_}"
+TEMP_DIR=$(mktemp -d) || {
+  echo "Error: Could not create temporary directory." >&2
+  exit 1
+}
+TEMP_SOURCE="$TEMP_DIR/$SAFE_BASENAME"
+cp "$SOURCE_FILE" "$TEMP_SOURCE"
+
+# Build the output temporary file (same safe name)
+TEMP_TARGET="$TEMP_DIR/$SAFE_BASENAME"
+
+# Stamp the temporary file
+STAMP_TEXT="POUR RECHERCHE DE CRÉDIT IMMOBILIER"
+STAMP_OPTS="pos:c, scale:1, op:.6"
+
+echo "Stamping '$SOURCE_FILE' -> '$TARGET_FILE'"
+pdfcpu stamp add \
+  "$STAMP_TEXT" \
+  "$STAMP_OPTS" \
+  "$TEMP_SOURCE" \
+  "$TEMP_TARGET" \
+  --force
+
+# Move the stamped file to the target directory with the original filename
+mv "$TEMP_TARGET" "$TARGET_FILE"
+
+# Clean up temporary directory
+rm -rf "$TEMP_DIR"
+
+echo "Done."
