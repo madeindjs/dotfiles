@@ -3,14 +3,21 @@
   "model": "ollama-cloud/glm-5.2",
   "small_model": "ollama-cloud/deepseek-v4-flash",
   "share": "disabled",
+  "disabled_providers": [],
+  "lsp": true,
   "permission": {
     "bash": {
       "git push": "ask",
+      "git commit": "ask",
       "git status": "allow",
       "git diff": "allow",
       "npm run build": "allow",
       "ls": "allow",
       "pwd": "allow"
+    },
+    "external_directory": {
+      "/home/alexandre/.rvm/**": "allow",
+      "/tmp": "allow"
     }
   }
 }
