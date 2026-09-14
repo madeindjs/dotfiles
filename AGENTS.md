@@ -6,6 +6,7 @@ Personal dotfiles repo. Each top-level directory is a Stow package that maps to 
 
 - Top-level directories are **GNU Stow** packages. Deploy with `stow -t "$HOME" <pkg>` from the repo root.
 - Config is organized by tool/app, not by OS-path. Examples: `neovim/`, `zsh/`, `scripts/`, `tmux/`, `opencode/`, `vibe/`, `yazi/`, `zellij/`.
+- `_skills/` is shared Agent Skills content (not a Stow package). Tool packages symlink into it (e.g. `cursor/.cursor/skills` → `../../_skills`, `opencode/.config/opencode/skills` → `../../../_skills`).
 - `scripts/` contains custom binaries under `scripts/.local/bin/` and zsh completions under `scripts/.zsh/completions/`.
 - Empty directories `cursor-linux/` and `cursor-macos/` exist for OS-specific Cursor settings; ignore them if they have no current content.
 - Binary/scripts under `scripts/.local/bin/` are mostly personal helpers; edit carefully and respect existing `set -euo pipefail` style.
