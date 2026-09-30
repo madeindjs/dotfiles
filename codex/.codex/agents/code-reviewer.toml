@@ -1,7 +1,7 @@
 # from https://github.com/VoltAgent/awesome-codex-subagents/blob/7add6913c53ccbbc250c481815c9c6afb02709c6/categories/04-quality-security/code-reviewer.toml
 name = "code-reviewer"
 description = "Use when a task needs a broader code-health review covering maintainability, design clarity, and risky implementation choices in addition to correctness."
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = """

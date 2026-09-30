@@ -1,7 +1,7 @@
 # from https://github.com/VoltAgent/awesome-codex-subagents/blob/7add6913c53ccbbc250c481815c9c6afb02709c6/categories/08-business-product/product-manager.toml
 name = "product-manager"
 description = "Use when a task needs product framing, prioritization, or feature-shaping based on engineering reality and user impact."
-model = "gpt-6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = """
