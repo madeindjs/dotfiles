@@ -1,0 +1,12 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "defaultMode": "auto"
+  },
+  "model": "sonnet",
+  "theme": "auto",
+  "editorMode": "vim"
+}
