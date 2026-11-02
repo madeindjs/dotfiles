@@ -1,5 +1,5 @@
 [mgr]
 prepend_keymap = [
-  { on = ["m"], run = 'shell --block -- mpv --profile=music "$@"', desc = "Open directory in mpv" },
-  { on = ["M"], run = 'shell --block -- mpv --profile=music-tv "$@"', desc = "Open directory in mpv" },
+  { on = ["m"], run = 'shell "mpv --profile=music %h" --block', desc = "Open hovered path in mpv" },
+  { on = ["M"], run = 'shell "mpv --profile=music-tv %h" --block', desc = "Open hovered path in mpv" },
 ]
