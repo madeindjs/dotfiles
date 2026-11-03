@@ -4,3 +4,6 @@
 vim.keymap.set("n", "<tab>", "<cmd>bnext<cr>", { desc = "Next buffer" })
 vim.keymap.set("n", "<S-tab>", "<cmd>bprevious<cr>", { desc = "Next buffer" })
 vim.keymap.set("n", "<leader>bn", "<cmd>enew<cr>", { desc = "Open a new buffer" })
+vim.keymap.set("n", "<leader>ud", function()
+  require("config.dictation").toggle()
+end, { desc = "Toggle voice dictation" })
