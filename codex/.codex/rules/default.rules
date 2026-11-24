@@ -45,3 +45,6 @@ prefix_rule(pattern=["python3", "/private/tmp/finalize-runner-budget.py"], decis
 prefix_rule(pattern=["node", "/private/tmp/verify-pi-startup.mjs"], decision="allow")
 prefix_rule(pattern=["pg_ctl", "-D", "/private/tmp/runner-budget-postgres", "stop"], decision="allow")
 prefix_rule(pattern=["initdb", "-D", "/tmp/dataset-publish-postgres", "-A", "trust", "--no-locale", "-E", "UTF8"], decision="allow")
+prefix_rule(pattern=["uv", "run", "pytest"], decision="allow")
+prefix_rule(pattern=["/bin/zsh", "-c", "SWARM_TEST_POSTGRES=1 uv run pytest packages/core/tests/test_postgres_service.py packages/examples/example-database"], decision="allow")
+prefix_rule(pattern=["/bin/zsh", "-c", "POSTGRES_USER=agent_swarm POSTGRES_PASS=agent_swarm POSTGRES_DB=agent_swarm POSTGRES_PORT=5433 uv run agent-swarm -f packages/examples/example-database/schema.yaml --env-file .env --save-logs -p 'Write a note and ask Agent B to read it back.'"], decision="allow")
