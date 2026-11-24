@@ -54,4 +54,10 @@
 "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
 },
+"terminal.external.osxExec": "WezTerm.app",
+"terminal.integrated.defaultProfile.osx": "zsh",
+"[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+},
+"window.autoDetectColorScheme": false,
 }
